@@ -178,6 +178,53 @@
     .splitbar .seg-yes{ background:var(--accent); transition:width .6s cubic-bezier(.22,.61,.36,1); }
     .splitbar .seg-no{ background:#C9C5B9; transition:width .6s cubic-bezier(.22,.61,.36,1); }
 
+    /* ---- SHIFT (before vs after) ---- */
+    .headline{
+      margin:.2rem 0 1.6rem;
+      font-family:"Lora",serif; line-height:1.1;
+    }
+    .headline .hl-big{
+      color:var(--accent); font-weight:500;
+      font-size:clamp(2.4rem,7vw,4.4rem); margin-right:.4rem;
+    }
+    .headline .hl-rest{
+      font-family:"Inter",sans-serif; font-weight:500;
+      color:var(--ink-mid); font-size:clamp(1rem,2.4vw,1.6rem);
+    }
+    .shifttable{ display:flex; flex-direction:column; gap:clamp(.55rem,1.2vw,.85rem); }
+    .shiftrow{
+      display:grid;
+      grid-template-columns: 1fr auto;
+      align-items:center;
+      gap:clamp(.8rem,2vw,1.6rem);
+      padding:clamp(.6rem,1.3vw,.95rem) 0;
+      border-bottom:1px solid var(--line);
+    }
+    .shiftrow:last-child{ border-bottom:none; }
+    .shift-theme{
+      font-family:"Inter",sans-serif; font-weight:600;
+      font-size:clamp(.95rem,2vw,1.35rem); letter-spacing:-0.01em;
+    }
+    .shiftrow.up .shift-theme{ color:var(--accent); }
+    .shift-nums{
+      display:flex; align-items:baseline; gap:clamp(.5rem,1.4vw,1rem);
+      font-family:"Lora",serif; white-space:nowrap;
+    }
+    .shift-start, .shift-end{
+      font-size:clamp(1.1rem,2.4vw,1.7rem); color:var(--ink-mid);
+      min-width:1.4em; text-align:right;
+    }
+    .shift-end{ color:var(--ink); font-weight:500; }
+    .shift-arrow{ color:var(--ink-soft); font-size:clamp(1rem,2vw,1.4rem); }
+    .shift-delta{
+      font-family:"Inter",sans-serif; font-weight:700;
+      font-size:clamp(.85rem,1.8vw,1.15rem);
+      min-width:3.4em; text-align:right;
+    }
+    .shift-delta.up{ color:#3F8F73; }     /* green up */
+    .shift-delta.down{ color:var(--accent); } /* coral down */
+    .shift-delta.flat{ color:var(--ink-soft); }
+
     /* ---- EMPTY ---- */
     .empty{
       text-align:center; padding:clamp(3rem,10vw,6rem) 1rem;
@@ -192,6 +239,26 @@
       font-family:"Inter",sans-serif; font-size:.82rem; letter-spacing:.03em; color:var(--ink-mid);
     }
     footer .wordmark{ font-weight:600; color:var(--ink); }
+
+    /* ---- EMBED MODE (iframe inside the deck, ~1280x720 slide) ---- */
+    body.embed{ background:var(--paper); }
+    body.embed .tabs{ display:none; }            /* no nav chrome */
+    body.embed footer{ display:none; }           /* no footer/back-links */
+    body.embed .eyebrow{ display:none; }         /* tighter, cleaner */
+    body.embed .wrap{
+      max-width:1180px;
+      padding:clamp(1.6rem,3.5vw,2.6rem) clamp(1.6rem,4vw,3rem);
+      min-height:100dvh;
+      display:flex; flex-direction:column; justify-content:center;
+    }
+    body.embed h1{
+      font-size:clamp(2rem,4.6vw,3.2rem);
+      margin-bottom:.2rem;
+    }
+    body.embed .meta{ margin-top:.5rem; margin-bottom:1.4rem; }
+    /* Give the single shown view room to breathe full-bleed in the slide. */
+    body.embed .board{ gap:clamp(.85rem,1.8vw,1.25rem); }
+    body.embed .shifttable{ gap:clamp(.5rem,1.3vw,.9rem); }
   </style>
 </head>
 <body>
@@ -206,6 +273,7 @@
     <div class="tabs">
       <button class="tab active" data-view="poll1">What the room thinks</button>
       <button class="tab" data-view="poll2">Changed your mind?</button>
+      <button class="tab" data-view="shift">Before vs after</button>
     </div>
 
     <!-- POLL 1: themed leaderboard -->
@@ -244,6 +312,19 @@
       </div>
     </div>
 
+    <!-- SHIFT: before vs after (aggregate) -->
+    <div class="view" id="view-shift">
+      <div class="headline" id="shiftHeadline" style="display:none;">
+        <span class="hl-big" id="shiftYesPct">0%</span>
+        <span class="hl-rest">changed their mind tonight</span>
+      </div>
+      <div class="shifttable" id="shifttable"></div>
+      <div class="empty" id="empty3" style="display:none;">
+        <div class="e1">Waiting for the room...</div>
+        <div class="e2">The before vs after movement will appear here once both polls have answers.</div>
+      </div>
+    </div>
+
     <footer>
       <span class="wordmark">INSEAD AI Club</span>
       <span>Code with Claude, debriefed &middot; refreshes automatically</span>
@@ -258,7 +339,23 @@
     // ================================================================
     const ENDPOINT = (window.AI_CLUB_ENDPOINT || "__PASTE_APPS_SCRIPT_WEB_APP_URL__");
     const ENDPOINT_SET = ENDPOINT && ENDPOINT.indexOf('PASTE_APPS_SCRIPT') === -1 && ENDPOINT.indexOf('http') === 0;
-    const REFRESH_MS = 4000;
+    const REFRESH_MS = 2500;  // snappy enough that a projected slide feels live
+
+    // ----------------------------------------------------------------
+    // URL params (for embedding the page as an iframe inside the deck)
+    //   ?view=leaderboard|beforeafter|changed  -> open straight on that view
+    //   ?embed=1  -> hide tab chrome + footer, single view full-bleed for a
+    //               1280x720 slide. Auto-refresh keeps running.
+    // No params  -> full page with tabs (normal direct visit).
+    // ----------------------------------------------------------------
+    const PARAMS = new URLSearchParams(location.search);
+    const VIEW_ALIASES = {
+      leaderboard: 'poll1', poll1: 'poll1', words: 'poll1',
+      changed: 'poll2', poll2: 'poll2', yesno: 'poll2',
+      beforeafter: 'shift', 'before-after': 'shift', shift: 'shift'
+    };
+    const PARAM_VIEW = VIEW_ALIASES[(PARAMS.get('view') || '').toLowerCase()] || null;
+    const EMBED = PARAMS.get('embed') === '1' || PARAMS.get('embed') === 'true';
 
     // Theme order = precedence. Loaded from the shared themes.json so the
     // dashboard and poll_takeaway.py never drift. Embedded fallback below.
@@ -403,16 +500,101 @@
     }
 
     // ================================================================
+    // Shared: bucket a list of answer strings -> {theme: count}
+    // (used by the shift view for both start and end answers)
+    // ================================================================
+    function bucketCounts(answers){
+      const counts = {};
+      THEME_ORDER.forEach(t => counts[t] = 0);
+      (answers || []).forEach(a => {
+        const s = (a || '').toString().trim();
+        if (s) counts[themeFor(s)]++;
+      });
+      return counts;
+    }
+
+    // ================================================================
+    // Render: before vs after (aggregate, no per-person matching needed)
+    //   poll1 answers = START, poll2 answers = END
+    // ================================================================
+    function renderShift(poll1, poll2){
+      const startAns = (poll1 || []).map(r => (r.answer || '').toString().trim()).filter(Boolean);
+      const endAns   = (poll2 || []).map(r => (r.answer || '').toString().trim()).filter(Boolean);
+
+      // Yes/No headline from poll2
+      let yes = 0, no = 0;
+      (poll2 || []).forEach(r => {
+        const v = (r.changed || '').toString().trim().toLowerCase();
+        if (v === 'yes') yes++; else if (v === 'no') no++;
+      });
+      const ynTotal = yes + no;
+
+      const headline = document.getElementById('shiftHeadline');
+      const table = document.getElementById('shifttable');
+      const empty = document.getElementById('empty3');
+
+      // Nothing yet on either side -> empty state
+      if (!startAns.length && !endAns.length && !ynTotal){
+        headline.style.display = 'none';
+        table.innerHTML = '';
+        empty.style.display = 'block';
+        document.getElementById('total').innerHTML =
+          '<b>' + startAns.length + '</b> start &middot; <b>' + endAns.length + '</b> now';
+        return;
+      }
+      empty.style.display = 'none';
+
+      // Headline
+      if (ynTotal){
+        const yp = Math.round((yes / ynTotal) * 100);
+        headline.style.display = 'block';
+        document.getElementById('shiftYesPct').textContent = yp + '%';
+      } else {
+        headline.style.display = 'none';
+      }
+
+      const startC = bucketCounts(startAns);
+      const endC = bucketCounts(endAns);
+
+      // Order themes by their END count (then START), biggest first; drop themes
+      // that are zero on both sides to keep the board clean.
+      const rows = THEME_ORDER
+        .map(t => ({ theme: t, start: startC[t], end: endC[t], delta: endC[t] - startC[t] }))
+        .filter(r => r.start > 0 || r.end > 0)
+        .sort((a, b) => (b.end - a.end) || (b.start - a.start));
+
+      document.getElementById('total').innerHTML =
+        '<b>' + startAns.length + '</b> start &middot; <b>' + endAns.length + '</b> now';
+
+      table.innerHTML = rows.map(r => {
+        const dir = r.delta > 0 ? 'up' : (r.delta < 0 ? 'down' : 'flat');
+        const arrow = r.delta > 0 ? '▲' : (r.delta < 0 ? '▼' : '');
+        const deltaTxt = r.delta === 0 ? '±0' : (arrow + (r.delta > 0 ? '+' + r.delta : r.delta));
+        return '' +
+          '<div class="shiftrow ' + dir + '">' +
+            '<div class="shift-theme">' + esc(r.theme) + '</div>' +
+            '<div class="shift-nums">' +
+              '<span class="shift-start">' + r.start + '</span>' +
+              '<span class="shift-arrow">→</span>' +
+              '<span class="shift-end">' + r.end + '</span>' +
+              '<span class="shift-delta ' + dir + '">' + deltaTxt + '</span>' +
+            '</div>' +
+          '</div>';
+      }).join('');
+    }
+
+    // ================================================================
     // Tabs
     // ================================================================
     let currentView = 'poll1';
-    const TITLES = { poll1: 'What the room thinks', poll2: 'Changed your mind?' };
+    const TITLES = { poll1: 'What the room thinks', poll2: 'Changed your mind?', shift: 'Before vs after' };
     document.querySelectorAll('.tab').forEach(tab => {
       tab.addEventListener('click', () => {
         currentView = tab.dataset.view;
         document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t === tab));
         document.getElementById('view-poll1').classList.toggle('active', currentView === 'poll1');
         document.getElementById('view-poll2').classList.toggle('active', currentView === 'poll2');
+        document.getElementById('view-shift').classList.toggle('active', currentView === 'shift');
         document.getElementById('title').textContent = TITLES[currentView];
         refresh(); // immediate refresh on switch
       });
@@ -427,15 +609,22 @@
         document.getElementById('livelabel').textContent = 'Rehearsal';
         document.getElementById('total').textContent = 'Endpoint not set - rehearsal mode';
         if (currentView === 'poll1'){ renderPoll1([]); }
-        else { renderPoll2([]); }
+        else if (currentView === 'poll2'){ renderPoll2([]); }
+        else { renderShift([], []); }
         return;
       }
-      const type = currentView === 'poll2' ? 'poll2' : 'poll1';
       try {
-        const data = await jsonp(type);
-        const responses = (data && data.responses) || [];
-        if (type === 'poll1') renderPoll1(responses);
-        else renderPoll2(responses);
+        if (currentView === 'shift'){
+          // The shift view needs BOTH polls.
+          const [d1, d2] = await Promise.all([jsonp('poll1'), jsonp('poll2')]);
+          renderShift((d1 && d1.responses) || [], (d2 && d2.responses) || []);
+        } else {
+          const type = currentView === 'poll2' ? 'poll2' : 'poll1';
+          const data = await jsonp(type);
+          const responses = (data && data.responses) || [];
+          if (type === 'poll1') renderPoll1(responses);
+          else renderPoll2(responses);
+        }
         document.getElementById('livelabel').textContent = 'Live';
       } catch (e) {
         // Keep last render on screen; don't blank the projector.
@@ -444,9 +633,26 @@
     }
 
     // ================================================================
-    // Boot: load themes.json, then start polling
+    // Apply a view programmatically (used by URL params + embed mode)
+    // ================================================================
+    function applyView(view){
+      currentView = view;
+      document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.view === view));
+      document.getElementById('view-poll1').classList.toggle('active', view === 'poll1');
+      document.getElementById('view-poll2').classList.toggle('active', view === 'poll2');
+      document.getElementById('view-shift').classList.toggle('active', view === 'shift');
+      document.getElementById('title').textContent = TITLES[view];
+    }
+
+    // ================================================================
+    // Boot: apply URL params, load themes.json, then start polling
     // ================================================================
     (async function init(){
+      // Embed mode: strip the chrome so a single view sits clean in a slide.
+      if (EMBED) document.body.classList.add('embed');
+      // Open directly on the requested view (default poll1).
+      applyView(PARAM_VIEW || 'poll1');
+
       try {
         const res = await fetch('../themes.json', { cache: 'no-store' });
         if (res.ok){

@@ -206,8 +206,14 @@
         <input type="text" id="name" name="name" autocomplete="name" placeholder="leave blank if you like" maxlength="60">
       </div>
 
+      <div class="field">
+        <label for="answer">What's your one word now?</label>
+        <input type="text" id="answer" name="answer" autocomplete="off" autocapitalize="off" placeholder="one word" maxlength="40">
+        <div class="hint">The skill that matters most, after tonight.</div>
+      </div>
+
       <div class="field" style="margin-bottom:0;">
-        <label>Your answer</label>
+        <label>Has it changed your mind?</label>
         <div class="choices">
           <button type="button" class="choice yes" data-val="yes">
             <span class="lead">Yes, it has</span>
@@ -247,8 +253,30 @@
     const EVENT_ID = "event-three";
     const SUBMIT_FLAG = "e3_changed_submitted";
 
+    // ------------------------------------------------------------
+    // DEVICE TOKEN (silent, no email)
+    // Read the SAME key the /poll page wrote. Same-origin, so storage
+    // is shared - this is how the start answer is matched to the end
+    // answer anonymously. Create one if somehow missing (e.g. a guest
+    // who lands here first).
+    // ------------------------------------------------------------
+    const TOKEN_KEY = "e3_device_token";
+    function deviceToken(){
+      let t = localStorage.getItem(TOKEN_KEY);
+      if (!t){
+        t = (window.crypto && crypto.randomUUID)
+          ? crypto.randomUUID()
+          : ('t-' + Date.now() + '-' + Math.random().toString(36).slice(2));
+        localStorage.setItem(TOKEN_KEY, t);
+      }
+      return t;
+    }
+
+    function firstWord(s){ return (s || '').trim().split(/\s+/)[0] || ''; }
+
     const form = document.getElementById('changedForm');
     const nameInput = document.getElementById('name');
+    const answerInput = document.getElementById('answer');
     const choices = document.querySelectorAll('.choice');
 
     function labelFor(val){ return val === 'yes' ? 'Yes, it has' : 'No, not really'; }
@@ -275,8 +303,10 @@
       const payload = {
         type: 'changed',
         timestamp: new Date().toISOString(),
+        token: deviceToken(),
         name: nameInput.value.trim(),
         changed: val,
+        answer: firstWord(answerInput.value),
         event: EVENT_ID
       };
 

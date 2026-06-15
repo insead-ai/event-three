@@ -4,8 +4,11 @@
 // ONE deploy serves BOTH polls and BOTH live pages.
 //
 // Two tabs in the one spreadsheet:
-//   Poll1  -> [Timestamp, Name, Answer, Event]   (the one-word poll)
-//   Poll2  -> [Timestamp, Name, Changed, Event]  (the yes/no "changed your mind")
+//   Poll1  -> [Timestamp, Name, Token, Answer, Event]
+//             (the one-word poll; Token is a silent per-device id)
+//   Poll2  -> [Timestamp, Name, Token, Changed, Answer, Event]
+//             (yes/no "changed your mind" + their one word NOW; the same
+//              Token lets you join a person's start answer to their end answer)
 // Each tab gets a bold, frozen header row created on first write.
 //
 // doPost routes on data.type:
@@ -25,13 +28,13 @@
 // ---- Tab definitions -------------------------------------------------
 var POLL1 = {
   tab: 'Poll1',
-  headers: ['Timestamp', 'Name', 'Answer', 'Event'],
-  keys: ['timestamp', 'name', 'answer', 'event']
+  headers: ['Timestamp', 'Name', 'Token', 'Answer', 'Event'],
+  keys: ['timestamp', 'name', 'token', 'answer', 'event']
 };
 var POLL2 = {
   tab: 'Poll2',
-  headers: ['Timestamp', 'Name', 'Changed', 'Event'],
-  keys: ['timestamp', 'name', 'changed', 'event']
+  headers: ['Timestamp', 'Name', 'Token', 'Changed', 'Answer', 'Event'],
+  keys: ['timestamp', 'name', 'token', 'changed', 'answer', 'event']
 };
 
 // Pick the tab config from a 'type' value (front-end sends 'word' or 'changed').

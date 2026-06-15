@@ -244,6 +244,25 @@
     const EVENT_ID = "event-three";
     const SUBMIT_FLAG = "e3_poll_submitted";
 
+    // ------------------------------------------------------------
+    // DEVICE TOKEN (silent, no email)
+    // A random per-device id, persisted in localStorage. Both /poll
+    // and /changed are same-origin (insead-ai.github.io), so they
+    // share storage and read the SAME key - that's how a person's
+    // start answer is matched to their end answer, anonymously.
+    // ------------------------------------------------------------
+    const TOKEN_KEY = "e3_device_token";
+    function deviceToken(){
+      let t = localStorage.getItem(TOKEN_KEY);
+      if (!t){
+        t = (window.crypto && crypto.randomUUID)
+          ? crypto.randomUUID()
+          : ('t-' + Date.now() + '-' + Math.random().toString(36).slice(2));
+        localStorage.setItem(TOKEN_KEY, t);
+      }
+      return t;
+    }
+
     const form = document.getElementById('pollForm');
     const nameInput = document.getElementById('name');
     const answerInput = document.getElementById('answer');
@@ -288,6 +307,7 @@
       const payload = {
         type: 'word',
         timestamp: new Date().toISOString(),
+        token: deviceToken(),
         name: name,
         answer: answer,
         event: EVENT_ID
