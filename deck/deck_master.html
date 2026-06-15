@@ -1,0 +1,1113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Code with Claude, Debriefed (AI Club Event 03)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--paper:#FAF9F5;--card:#F4F2EC;--ink:#141413;--ink-soft:#8A8780;--ink-mid:#5C5A53;--accent:#D97757;--line:#E2DFD6;--mint:#cfe6e0;--dark:#1d1d1b;}
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:#2A2A28;}
+  body{font-family:"Lora",Georgia,serif;}
+  .deck{display:flex;flex-direction:column;align-items:center;gap:40px;padding:40px 0;}
+  .slide{width:1280px;height:720px;background:var(--paper);color:var(--ink);position:relative;overflow:hidden;flex:0 0 auto;box-shadow:0 8px 40px rgba(0,0,0,.35);}
+  .pad{position:absolute;inset:0;padding:66px 84px;}
+  .pad.centerpad{display:flex;flex-direction:column;justify-content:center;padding-bottom:120px;}
+  h1.title{font-family:"Lora",Georgia,serif;font-weight:500;font-size:42px;line-height:1.06;margin:0;letter-spacing:-0.01em;}
+  .subtitle{font-family:"Inter",Arial,sans-serif;font-weight:400;font-size:17px;color:var(--ink-soft);margin:10px 0 0;}
+  .eyebrow{font-family:"Inter",sans-serif;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:14px;}
+
+  /* mint section/quote slides */
+  .section.mint{background:var(--mint);} .section.mint .pad{display:flex;flex-direction:column;justify-content:center;}
+  .section.mint .quote{font-family:"Lora",serif;font-size:90px;color:rgba(20,20,19,.25);line-height:.5;margin-bottom:10px;}
+  .section.mint h1{font-size:52px;font-weight:500;line-height:1.1;letter-spacing:-0.01em;max-width:1040px;margin:0;}
+  .section.mint .sub2{font-family:"Inter",sans-serif;font-size:18px;color:var(--ink-mid);margin-top:18px;max-width:940px;line-height:1.5;}
+
+  /* big quiet quote on paper */
+  .bigquote{display:flex;flex-direction:column;justify-content:center;height:100%;}
+  .bigquote h1{font-family:"Lora",serif;font-weight:500;font-size:84px;line-height:1.05;letter-spacing:-0.015em;margin:0;max-width:1060px;}
+  .bigquote .attr{font-family:"Inter",sans-serif;font-size:16px;color:var(--ink-mid);margin-top:30px;}
+  .bigquote .cv{font-family:"Inter",sans-serif;font-size:14px;color:var(--ink-soft);margin-top:6px;}
+
+  /* two cards (light/dark) */
+  .twocard{display:flex;gap:34px;margin-top:54px;}
+  .tc{flex:1;border-radius:16px;padding:34px 32px;}
+  .tc.light{background:var(--card);}
+  .tc.dark{background:var(--dark);color:var(--paper);}
+  .tc .eb{font-family:"Inter",sans-serif;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:6px;}
+  .tc .hd{font-family:"Lora",serif;font-size:22px;font-weight:500;margin-bottom:14px;}
+  .tc .qt{font-family:"Lora",serif;font-size:19px;font-style:italic;line-height:1.45;}
+  .tc .at{font-family:"Inter",sans-serif;font-size:13px;color:var(--ink-mid);margin-top:16px;}
+  .tc .cv2{font-family:"Inter",sans-serif;font-size:13.5px;color:var(--ink-soft);margin-top:4px;}
+  .tc.dark .at{color:rgba(250,249,245,.7);} .tc.dark .cv2{color:rgba(250,249,245,.7);}
+  .tc ul{margin:0;padding-left:18px;}
+  .tc li{font-family:"Inter",sans-serif;font-size:14px;line-height:1.8;}
+  .tc.dark li, .tc.dark .hd{color:var(--paper);}
+  .footline{margin-top:36px;font-family:"Inter",sans-serif;font-size:14px;color:var(--ink-mid);line-height:1.6;max-width:1050px;}
+
+  /* flow pills */
+  .flow{margin-top:50px;}
+  .flowrow{display:flex;align-items:center;gap:0;margin-bottom:24px;}
+  .flabel{flex:0 0 80px;font-family:"Inter",sans-serif;font-size:13px;font-weight:600;color:var(--ink-soft);}
+  .fbox{background:var(--card);border-radius:10px;padding:18px 24px;font-family:"Inter",sans-serif;font-size:17px;}
+  .fbox.dark{background:var(--dark);color:var(--paper);}
+  .fbox.hot{background:var(--accent);color:var(--paper);}
+  .farrow{padding:0 16px;color:var(--ink-soft);font-size:18px;}
+  .flowcap{margin-top:30px;font-family:"Inter",sans-serif;font-size:14px;color:var(--ink-mid);line-height:1.6;max-width:1050px;}
+
+  /* numbered rows */
+  .nums{margin-top:44px;}
+  .numrow{display:flex;gap:26px;padding:28px 0;border-top:1px solid var(--line);align-items:baseline;}
+  .numrow:last-child{border-bottom:1px solid var(--line);}
+  .numrow .nn{flex:0 0 40px;font-family:"Inter",sans-serif;font-size:14px;font-weight:600;color:var(--accent);}
+  .numrow .nh{flex:0 0 300px;font-family:"Lora",serif;font-size:19px;font-weight:500;}
+  .numrow .nt{flex:1;font-family:"Inter",sans-serif;font-size:17px;color:var(--ink-mid);line-height:1.55;}
+
+  /* giant numeral */
+  .bigwrap{display:flex;flex-direction:column;justify-content:center;height:100%;}
+  .bignum{font-family:"Lora",serif;font-weight:500;font-size:180px;line-height:1;letter-spacing:-0.02em;}
+  .bignum small{font-size:72px;color:var(--ink-mid);}
+  .bigcap{font-family:"Inter",sans-serif;font-size:16px;color:var(--ink-mid);margin-top:26px;max-width:780px;line-height:1.6;}
+
+  /* three cards */
+  .qs{display:flex;gap:28px;margin-top:54px;}
+  .qcard{flex:1;background:var(--card);border-radius:14px;padding:30px 26px;}
+  .qcard .ic{width:26px;height:26px;border-radius:6px;background:#e2ded3;margin-bottom:20px;}
+  .qcard .qh{font-family:"Lora",serif;font-size:18px;font-weight:500;line-height:1.3;}
+  .qcard .qb{font-family:"Inter",sans-serif;font-size:12.5px;color:var(--ink-mid);margin-top:12px;line-height:1.5;}
+
+  /* redline grammar */
+  .del{color:var(--ink-soft);text-decoration:line-through;text-decoration-thickness:1.5px;}
+  .ins{color:var(--accent);font-weight:500;}
+  .rewrites{margin-top:54px;max-width:1000px;}
+  .rw1{padding:24px 0;border-top:1px solid var(--line);font-family:"Lora",serif;font-size:24px;line-height:1.5;}
+  .rw1:last-child{border-bottom:1px solid var(--line);}
+
+  /* chart card */
+  .chartcard{margin-top:44px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 2px 14px rgba(20,20,19,.06);}
+  .chartcard img{max-height:360px;width:auto;margin:0 auto;display:block;border-radius:8px;}
+
+  /* linkedin screenshot layout */
+  .liwrap{display:flex;gap:54px;align-items:center;height:calc(100% - 60px);}
+  .lileft{flex:1;}
+  .liright img{height:470px;width:auto;border:1px solid var(--line);border-radius:14px;box-shadow:0 6px 24px rgba(20,20,19,.14);display:block;}
+
+  /* mono artefacts */
+  .mono{font-family:"JetBrains Mono",monospace;}
+  .promptpanel{margin-top:40px;background:var(--dark);color:var(--paper);border-radius:14px;padding:30px 34px;font-family:"JetBrains Mono",monospace;font-size:15px;line-height:1.8;max-width:880px;}
+  .promptpanel .pc{color:#e8a98d;}
+
+  /* who to follow */
+  .wtf{display:flex;gap:36px;margin-top:34px;}
+  .wtfmain{flex:1;display:flex;flex-direction:column;gap:14px;}
+  .wtfrow{display:flex;gap:14px;}
+  .qcardq{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px;flex:1;}
+  .qcardq img{width:62px;height:62px;display:block;margin-bottom:8px;}
+  .qcardq .qn{font-family:"Lora",serif;font-size:14.5px;font-weight:600;line-height:1.2;}
+  .qcardq .qd{font-family:"Inter",sans-serif;font-size:10.5px;color:var(--ink-mid);margin-top:4px;line-height:1.4;}
+  .hero-q{flex:2.15;display:flex;gap:18px;align-items:center;background:#fff;border:1.5px solid var(--accent);border-radius:12px;padding:14px 18px;}
+  .hero-q img{width:96px;height:96px;flex:0 0 auto;}
+  .hero-q .hl{font-family:"Inter",sans-serif;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:3px;}
+  .hero-q .qn{font-family:"Lora",serif;font-size:20px;font-weight:600;}
+  .hero-q .qd{font-family:"Lora",serif;font-style:italic;font-size:13px;color:var(--ink-mid);margin-top:3px;}
+  .wtfside{flex:0 0 300px;}
+  .wtfside .sh{font-family:"Inter",sans-serif;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:6px;}
+  .srow{display:flex;gap:12px;align-items:center;padding:7px 0;border-top:1px solid var(--line);}
+  .srow img{width:46px;height:46px;flex:0 0 auto;}
+  .srow .qn{font-family:"Inter",sans-serif;font-size:12.5px;font-weight:600;}
+  .srow .qd{font-family:"Inter",sans-serif;font-size:10.5px;color:var(--ink-mid);}
+
+  /* live dot */
+  .livedot{display:inline-block;width:12px;height:12px;border-radius:50%;background:var(--accent);margin-right:10px;animation:pulse 1.6s infinite;}
+  @keyframes pulse{0%{opacity:1;}50%{opacity:.35;}100%{opacity:1;}}
+  .livetag{font-family:"Inter",sans-serif;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-mid);margin-top:44px;}
+
+  .logo-tr{position:absolute;top:50px;right:84px;height:64px;}
+  .footer{position:absolute;left:84px;right:84px;bottom:34px;border-top:1px solid var(--line);padding-top:12px;font-family:"Inter",sans-serif;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);display:flex;justify-content:space-between;align-items:center;z-index:5;}
+  .footer.onmint{border-color:rgba(20,20,19,.18);}
+  .wordmark{font-weight:600;letter-spacing:0;text-transform:none;color:var(--ink);font-size:14px;}
+
+  /* creative tension: writer/editor -> spark -> outsized output */
+  .tension{margin-top:38px;}
+  .tensionrow{display:flex;align-items:stretch;gap:0;}
+  .tbox{flex:1;border-radius:16px;padding:30px 30px;}
+  .tbox.light{background:var(--card);}
+  .tbox.dark{background:var(--dark);color:var(--paper);}
+  .tbox .eb{font-family:"Inter",sans-serif;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:8px;}
+  .tbox .qt{font-family:"Lora",serif;font-size:20px;font-style:italic;line-height:1.4;}
+  .tbox .at{font-family:"Inter",sans-serif;font-size:13px;margin-top:14px;color:var(--ink-mid);}
+  .tbox.dark .at{color:rgba(250,249,245,.7);}
+  .spark{flex:0 0 130px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;}
+  .spark .star{font-size:42px;color:var(--accent);line-height:1;}
+  .spark .arr{color:var(--ink-soft);font-size:20px;}
+  .spark .lbl{font-family:"Inter",sans-serif;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);text-align:center;line-height:1.3;}
+  .tensionout{text-align:center;margin-top:18px;}
+  .tensionout .arrowdown{color:var(--ink-soft);font-size:22px;}
+  .tensionout .pill{display:inline-block;margin-top:6px;background:var(--accent);color:var(--paper);border-radius:12px;padding:13px 26px;font-family:"Lora",serif;font-size:21px;font-weight:500;}
+  .tensionout .cap{font-family:"Lora",serif;font-style:italic;font-size:16px;color:var(--ink-mid);margin-top:16px;}
+
+  /* revenue-per-employee chart (deck-native) */
+  .rpe{margin-top:18px;}
+  .rpe .axlbl{font-family:"Inter",sans-serif;font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-soft);font-weight:600;margin-bottom:10px;}
+  .rperow{display:flex;align-items:center;height:22px;margin-bottom:5px;}
+  .rperow .nm{width:116px;flex:0 0 auto;text-align:right;padding-right:14px;font-family:"Inter",sans-serif;font-size:13.5px;font-weight:500;color:var(--ink-mid);white-space:nowrap;}
+  .rperow .trk{flex:1;display:flex;align-items:center;}
+  .rperow .br{height:16px;border-radius:4px;background:var(--card);border-right:2px solid var(--line);}
+  .rperow .vl{margin-left:10px;font-family:"Inter",sans-serif;font-size:13px;font-weight:600;color:var(--ink-soft);white-space:nowrap;}
+  .rperow .stf{margin-left:8px;font-family:"Inter",sans-serif;font-size:11px;color:var(--ink-soft);opacity:.75;}
+  .rperow.hero .nm{color:var(--accent);font-weight:700;font-size:14.5px;}
+  .rperow.hero .br{height:22px;background:var(--accent);border-right:none;box-shadow:0 2px 12px rgba(217,119,87,.30);}
+  .rperow.hero .vl{color:var(--accent);font-weight:700;font-size:14.5px;}
+  .rpequote{display:flex;justify-content:space-between;align-items:flex-end;gap:30px;border-top:1px solid var(--line);margin-top:18px;padding-top:14px;}
+  .rpequote .q{font-family:"Lora",serif;font-style:italic;font-size:19px;line-height:1.4;color:var(--ink);max-width:760px;}
+  .rpequote .q b{color:var(--accent);font-style:normal;}
+  .rpequote .by{font-family:"Inter",sans-serif;font-size:13px;color:var(--ink-mid);margin-top:6px;font-weight:500;}
+  .rpequote .src{font-family:"Inter",sans-serif;font-size:9.5px;line-height:1.5;color:var(--ink-soft);text-align:right;max-width:360px;}
+
+  /* "frontier disagrees" contrast wall */
+  .dis{margin-top:22px;}
+  .disrow{display:flex;align-items:stretch;margin-bottom:12px;}
+  .distile{flex:1;border-radius:12px;padding:13px 20px;}
+  .distile.l{background:var(--card);}
+  .distile.r{background:var(--dark);color:var(--paper);}
+  .distile .dh{font-family:"Lora",serif;font-size:19px;font-weight:600;line-height:1.15;}
+  .distile .da{font-family:"Inter",sans-serif;font-size:11.5px;color:var(--accent);font-weight:600;margin-top:5px;}
+  .distile.r .da{color:#e8a98d;}
+  .distile .dc{font-family:"Inter",sans-serif;font-size:12.5px;color:var(--ink-mid);line-height:1.4;margin-top:6px;}
+  .distile.r .dc{color:rgba(250,249,245,.72);}
+  .discue{flex:0 0 120px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 6px;}
+  .discue .dtop{font-family:"Inter",sans-serif;font-size:9.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-soft);text-align:center;line-height:1.25;margin-bottom:5px;}
+  .discue .darrows{font-family:"Inter",sans-serif;font-size:13px;font-weight:700;color:var(--accent);white-space:nowrap;}
+
+  @page{size:1280px 720px;margin:0;}
+  @media print{html,body{background:#fff;}.deck{gap:0;padding:0;display:block;}.slide{box-shadow:none;page-break-after:always;break-after:page;margin:0;}}
+
+  /* ---- notes mode (?notes) ---- */
+  body.notesmode{background:#ECEAE3;}
+  body.notesmode .deck{display:block;padding:96px 28px 60px;}
+  .noteshead{position:fixed;top:0;left:0;right:0;height:64px;background:#1d1d1b;color:#FAF9F5;display:flex;align-items:center;justify-content:space-between;padding:0 24px;z-index:100;font-family:"Inter",sans-serif;}
+  .noteshead .ttl{font-size:15px;font-weight:600;}
+  .noteshead .hint{font-size:12px;color:rgba(250,249,245,.6);}
+  .noteshead button{font-family:"Inter",sans-serif;font-size:13px;border:1px solid rgba(250,249,245,.3);background:transparent;color:#FAF9F5;border-radius:8px;padding:8px 14px;margin-left:10px;cursor:pointer;}
+  .noteshead button:hover{background:rgba(250,249,245,.12);}
+  .noterow{display:flex;gap:28px;align-items:flex-start;max-width:1380px;margin:0 auto 30px;page-break-inside:avoid;break-inside:avoid;}
+  .noterow .scaler{flex:0 0 660px;height:371px;overflow:hidden;border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,.18);background:#fff;}
+  .noterow .scaler .slide{transform:scale(.5156);transform-origin:top left;margin:0;box-shadow:none;}
+  .notepanel{position:relative;flex:1;background:#fff;border:1px solid #E2DFD6;border-radius:12px;padding:20px 22px;font-family:"Inter",sans-serif;}
+  .notepanel .sn{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#D97757;font-weight:600;margin-bottom:2px;padding-right:165px;}
+  .notepanel .st{font-size:15px;font-weight:600;color:#141413;margin-bottom:14px;line-height:1.3;padding-right:165px;}
+  .sectag{position:absolute;top:18px;right:18px;}
+  .sectag input{font-family:"Inter",sans-serif;font-size:11px;font-weight:600;color:#5C5A53;background:#F4F2EC;border:1px solid #E2DFD6;border-radius:6px;padding:6px 10px;width:148px;text-align:right;letter-spacing:.03em;}
+  .sectag input::placeholder{color:#B5B2AA;font-weight:400;}
+  .sectag input:focus{outline:none;border-color:#D97757;background:#fff;}
+  .notepanel label{display:block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#8A8780;font-weight:600;margin:12px 0 4px;}
+  .notepanel textarea{width:100%;border:1px solid #E2DFD6;border-radius:8px;padding:9px 11px;font-family:"Inter",sans-serif;font-size:14px;line-height:1.5;color:#141413;resize:vertical;background:#FAF9F5;}
+  .notepanel textarea:focus{outline:none;border-color:#D97757;background:#fff;}
+  .notepanel label.fredlbl{color:#D97757;margin-top:18px;border-top:1px solid #F0E5DF;padding-top:14px;}
+  .notepanel textarea.fred{background:#FBF3EF;border-color:#ECC9BB;}
+  .notepanel textarea.fred:focus{background:#fff;border-color:#D97757;}
+  @media print{
+    body.notesmode{background:#fff;}
+    .noteshead{display:none;}
+    body.notesmode .deck{padding:0;}
+    .noterow{margin:0 0 18px;}
+    .notepanel{border-color:#ccc;}
+    .notepanel textarea{background:#fff;}
+  }
+</style>
+</head>
+<body>
+<div class="deck">
+
+  <!-- 01 title -->
+  <section class="slide" data-nid="n1">
+    <div class="pad">
+      <img class="logo-tr" src="ai-club-logo-transparent.png" alt="INSEAD AI Club">
+      <div class="bigquote">
+        <div class="eyebrow">INSEAD AI Club &middot; Event 03</div>
+        <h1 style="font-size:64px;">Code with Claude, debriefed.</h1>
+        <div class="attr">Freddie Chambers &amp; Isabella Isotta</div>
+        <div class="cv">Monday 15 June 2026 &middot; Amphi Rubeli</div>
+      </div>
+      <div class="footer"><span>Code with Claude, debriefed</span><span class="wordmark">INSEAD AI Club</span></div>
+    </div>
+  </section>
+
+  <!-- 02 opener: live word-cloud poll (QR #1) -->
+  <section class="slide section mint" data-nid="n2">
+    <div class="pad">
+      <div class="eyebrow">Before we start</div>
+      <h1>In one word: the most important skill for being good at AI?</h1>
+      <div class="sub2">Scan and drop your one word. We'll look at the room's answers - and come back to them at the end.</div>
+      <div style="margin-top:34px;display:flex;align-items:center;gap:24px;">
+        <img src="qr/poll.png" alt="Scan to open the live poll" style="width:140px;height:140px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:8px;">
+        <div style="font-family:'Inter',sans-serif;font-size:15px;color:var(--ink-mid);max-width:520px;line-height:1.5;">Scan to answer, or go to<br><span style="font-weight:600;color:var(--ink);">insead-ai.github.io/event-three/poll</span></div>
+      </div>
+      <div class="footer onmint"><span>Code with Claude, debriefed</span><span class="wordmark">INSEAD AI Club</span></div>
+    </div>
+  </section>
+
+  <!-- 04 why now / permission (not doom) -->
+  <section class="slide" data-nid="n3">
+    <div class="pad">
+      <div class="eyebrow">Why this matters now</div>
+      <h1 class="title" style="max-width:1000px;">Feeling behind isn't a skill gap. Even the people building this feel it.</h1>
+      <div style="display:flex;gap:34px;margin-top:32px;align-items:stretch;">
+        <div style="flex:1.5;display:flex;flex-direction:column;gap:18px;">
+          <div class="tc light" style="padding:24px 28px;">
+            <div class="qt" style="font-size:17px;">"I've never felt this much behind... Clearly some powerful alien tool was handed around except it comes with no manual."</div>
+            <div class="at" style="margin-top:12px;">Andrej Karpathy, Anthropic</div>
+            <div class="cv2">OpenAI co-founder. Ex-Tesla AI Director.</div>
+          </div>
+          <div class="tc dark" style="padding:24px 28px;">
+            <div class="qt" style="font-size:17px;">"I'm not going to stand up here and tell you I know exactly what's next, because I don't. No one does."</div>
+            <div class="at" style="margin-top:12px;">Boris Cherny, creator of Claude Code</div>
+            <div class="cv2">On stage at Code with Claude, London.</div>
+          </div>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;min-width:0;">
+          <img src="img/cwc-stage.png" alt="On stage at Code with Claude, London" style="width:100%;flex:1;object-fit:cover;border-radius:16px;border:1px solid var(--line);box-shadow:0 6px 24px rgba(20,20,19,.12);">
+          <div style="font-family:'Inter',sans-serif;font-size:12px;color:var(--ink-soft);margin-top:10px;">Code with Claude, London - May 2026</div>
+        </div>
+      </div>
+      <div class="footer"><span>Code with Claude, debriefed</span><span class="wordmark">INSEAD AI Club</span></div>
+    </div>
+  </section>
+
+  <!-- 05 METR -->
+  <section class="slide" data-nid="n4">
+    <div class="pad">
+      <div class="eyebrow">The pace, measured</div>
+      <h1 class="title">How long a task can an AI finish on its own?</h1>
+      <div style="display:flex;gap:54px;align-items:center;margin-top:40px;">
+        <div class="chartcard" style="margin-top:0;flex:0 0 auto;">
+          <svg width="660" height="330" viewBox="0 0 660 330" font-family="Inter,sans-serif">
+            <g stroke="#E2DFD6" stroke-width="1">
+              <line x1="70" y1="290" x2="640" y2="290"/><line x1="70" y1="240" x2="640" y2="240"/><line x1="70" y1="190" x2="640" y2="190"/><line x1="70" y1="140" x2="640" y2="140"/><line x1="70" y1="90" x2="640" y2="90"/><line x1="70" y1="40" x2="640" y2="40"/>
+            </g>
+            <g fill="#8A8780" font-size="11" text-anchor="end">
+              <text x="62" y="294">4 sec</text><text x="62" y="244">1 min</text><text x="62" y="194">15 min</text><text x="62" y="144">1 hr</text><text x="62" y="94">4 hrs</text><text x="62" y="44">16 hrs</text>
+            </g>
+            <g fill="#8A8780" font-size="11" text-anchor="middle">
+              <text x="120" y="312">2019</text><text x="270" y="312">2021</text><text x="420" y="312">2023</text><text x="570" y="312">2025</text>
+            </g>
+            <line x1="100" y1="295" x2="615" y2="35" stroke="#8A8780" stroke-width="1.5" stroke-dasharray="5 5"/>
+            <g fill="#1d1d1b">
+              <circle cx="110" cy="288" r="6"/><circle cx="205" cy="242" r="6"/><circle cx="300" cy="194" r="6"/><circle cx="395" cy="146" r="6"/><circle cx="475" cy="106" r="6"/><circle cx="545" cy="72" r="6"/>
+            </g>
+            <circle cx="605" cy="42" r="8" fill="#D97757"/>
+            <g fill="#5C5A53" font-size="12">
+              <text x="124" y="280">GPT-2</text><text x="409" y="139">GPT-4</text>
+            </g>
+            <text x="598" y="20" fill="#D97757" font-size="12" font-weight="600" text-anchor="end">Claude Mythos Preview - this week</text>
+          </svg>
+        </div>
+        <div>
+          <div style="font-family:'Lora',serif;font-weight:500;font-size:48px;line-height:1.1;max-width:340px;">Doubles every few months.</div>
+          <div class="flowcap" style="margin-top:20px;max-width:340px;">Minutes a year ago. Hours today. Source: METR.</div>
+        </div>
+      </div>
+      <div class="footer"><span>Code with Claude, debriefed</span><span class="wordmark">INSEAD AI Club</span></div>
+    </div>
+  </section>
+
+  <!-- conference context (mint section divider) -->
+  <section class="slide section mint" data-nid="nconf">
+    <div class="pad">
+      <div class="eyebrow">The conference</div>
+      <h1>A bit of context on the conference.</h1>
+      <div class="sub2">We went to Anthropic's builder conference - a day of talks from Anthropic's own builders and founders running real companies on Claude, pitched at people building at the frontier, not beginners.</div>
+      <div class="footer onmint"><span>Code with Claude, debriefed</span><span class="wordmark">INSEAD AI Club</span></div>
+    </div>
+  </section>
+
+
+  <!-- 08 the hook: how lean are they (revenue per employee) -->
+  <section class="slide" data-nid="n6b">
+    <div class="pad">
+      <div class="eyebrow">We spent a day with the people who build Claude</div>
+      <h1 class="title" style="max-width:1060px;">They run about $47bn a year on roughly 5,000 people.</h1>
+      <div class="rpe" style="margin-top:24px;">
+        <div class="axlbl">Revenue per employee ($m, annualised)</div>
+        <div class="rperow hero"><div class="nm">Anthropic</div><div class="trk"><div class="br" style="width:82%"></div><div class="vl">$9.4M</div><span class="stf">~5,000 staff</span></div></div>
+        <div class="rperow"><div class="nm">Nvidia</div><div class="trk"><div class="br" style="width:44.9%"></div><div class="vl">$5.1M</div></div></div>
+        <div class="rperow"><div class="nm">OpenAI</div><div class="trk"><div class="br" style="width:31.4%"></div><div class="vl">$3.6M</div></div></div>
+        <div class="rperow"><div class="nm">Meta</div><div class="trk"><div class="br" style="width:22.2%"></div><div class="vl">$2.6M</div></div></div>
+        <div class="rperow"><div class="nm">Apple</div><div class="trk"><div class="br" style="width:21.9%"></div><div class="vl">$2.5M</div></div></div>
+        <div class="rperow"><div class="nm">Alphabet</div><div class="trk"><div class="br" style="width:18.4%"></div><div class="vl">$2.1M</div></div></div>
+        <div class="rperow"><div class="nm">Microsoft</div><div class="trk"><div class="br" style="width:10.8%"></div><div class="vl">$1.2M</div></div></div>
+        <div class="rperow"><div class="nm">Salesforce</div><div class="trk"><div class="br" style="width:4.3%"></div><div class="vl">$0.50M</div></div></div>
+        <div class="rperow"><div class="nm">ServiceNow</div><div class="trk"><div class="br" style="width:4.0%"></div><div class="vl">$0.46M</div></div></div>
+        <div class="rperow"><div class="nm">Amazon</div><div class="trk"><div class="br" style="width:4.0%"></div><div class="vl">$0.46M</div></div></div>
+        <div class="rperow"><div class="nm">Walmart</div><div class="trk"><div class="br" style="width:3.0%"></div><div class="vl">$0.34M</div><span class="stf">2.1m staff</span></div></div>
+      </div>
+      <div class="rpequote">
+        <div>
+          <div style="font-family:'Lora',serif;font-size:22px;font-style:italic;color:var(--ink);">So how do you run a company like that?</div>
+          <div class="src" style="text-align:left;max-width:none;margin-top:6px;">About 28x Walmart's revenue per head. Sources: Anthropic run-rate &divide; est. headcount (Series H, May 2026; ~5,000 staff). Public cos: latest 10-K. Run-rate is not realised full-year revenue.</div>
+        </div>
+      </div>
+      <div class="footer"><span>Code with Claude, debriefed</span><span class="wordmark">INSEAD AI Club</span></div>
+    </div>
+  </section>
+
+  <!-- 08b the answer: organic growth, not headcount -->
+  <section class="slide" data-nid="n6">
+    <div class="pad centerpad">
+      <div class="eyebrow">How they stay this lean</div>
+      <h1 class="title">A closer look at the Claude culture.</h1>
+      <div class="qs">
+        <div class="qcard"><div class="ic"></div><div class="qh">Not the engineers you'd picture</div><div class="qb">Hats, creative-agency attire - the room was already dressed for it. The people pushing this hardest are creative, product-minded builders.</div></div>
+        <div class="qcard"><div class="ic"></div><div class="qh">A subculture, not a conference</div><div class="qb">Anthropic stays lean while it grows, and its events team is elite - they build a subcommunity, not just host a day.</div></div>
+        <div class="qcard"><div class="ic"></div><div class="qh">People love this product</div><div class="qb">Not adoption - love. A room full of people who have rebuilt how they work around it, swapping setups like collectors.</div></div>
+      </div>
+      <div class="flowcap" style="font-family:'Lora',serif;font-style:italic;font-size:17px;">The product spreads itself - that is how you run $47bn on 5,000 people.</div>
+      <div class="footer"><span>Code with Claude, debriefed</span><span class="wordmark">INSEAD AI Club</span></div>
+    </div>
+  </section>
+
+  <!-- LIVE RESULTS (replicated below the culture slide) -->
+  <section class="slide" data-nid="nlive1b">
+    <iframe src="https://insead-ai.github.io/event-three/results/?embed=1&amp;view=leaderboard" title="Live - what the room thinks" style="position:absolute;inset:0;width:100%;height:100%;border:0;"></iframe>
+  </section>
+
+  <!-- 09 the reveal (Point 2B: the culture move) -->
+  <section class="slide" data-nid="n7">
+    <div class="pad">
+      <div class="bigquote">
+        <div class="eyebrow">The reveal</div>
+        <h1 style="font-size:58px;">The people who build Claude Code<br>don't really write code anymore.</h1>
+        <div class="attr" style="font-family:'Lora',serif;font-style:italic;font-size:21px;color:var(--ink);margin-top:32px;">The engineers we spoke to brief Claude, set it running overnight, and review what comes back.</div>
+        <div class="cv" style="margin-top:18px;max-width:900px;line-height:1.6;font-size:17px;">Fiona Fung, Head of Engineering for Claude Code: the work has shifted from writing code to reviewing it. If the frontier directs and checks rather than types, this was never about coding. It's management and communication.</div>
+      </div>
+      <div class="footer"><span>Code with Claude, debriefed</span><span class="wordmark">INSEAD AI Club</span></div>
+    </div>
+  </section>
+
+  <!-- 10 Takeaway 01: the loop (merged intro + diagram) -->
+  <section class="slide section mint" data-nid="n8">
+    <div class="pad centerpad">
+      <div class="eyebrow">Takeaway 01 &middot; The structure</div>
+      <h1 class="title">The machine does the typing. You do everything else.</h1>
+      <div class="flow">
+        <div class="flowrow"><span class="fbox dark">Ask &amp; research</span><span class="farrow">&rarr;</span><span class="fbox dark">Plan</span><span class="farrow">&rarr;</span><span class="fbox">Build</span><span class="farrow">&rarr;</span><span class="fbox hot">Verify</span></div>
+      </div>
+      <div class="flowcap">The repeatable recipe at the frontier. The first and last steps do almost all the work - go deeper on context than feels natural.</div>
+      <div class="footer onmint"><span>Code with Claude, debriefed</span><span class="wordmark">INSEAD AI Club</span></div>
+    </div>
+  </section>
+
+  <!-- 11 Takeaway 01: give the work a checker (kept verification slide) -->
+  <section class="slide" data-nid="n9">
+    <div class="pad centerpad">
+      <div class="eyebrow">Takeaway 01 &middot; The step almost nobody does</div>
+      <h1 class="title">Give the work a checker.</h1>
+      <div class="bigquote" style="height:auto;margin-top:54px;">
+        <div class="attr" style="font-family:'Lora',serif;font-style:italic;font-size:28px;color:var(--ink);line-height:1.4;max-width:980px;">"Give Claude a way to verify its work - this is the single highest-leverage thing you can do."</div>
+        <div class="cv" style="margin-top:18px;font-size:16px;">Anthropic Engineering. A separate AI with one job: check the output against what you said good looks like.</div>
+      </div>
+      <div class="footer"><span>Code with Claude, debriefed</span><span class="wordmark">INSEAD AI Club</span></div>
+    </div>
+  </section>
+
+  <!-- 17 takeaway 3 -->
+  <section class="slide" data-nid="n16">
+    <div class="pad">
+      <div style="display:flex;gap:44px;align-items:center;height:100%;">
+        <div style="flex:1.45;">
+          <div class="eyebrow">Takeaway 01 &middot; Keep the checker fresh</div>
+          <h1 class="title">Fresh eyes beat long memory.</h1>
+          <div class="nums" style="margin-top:26px;">
+            <div class="numrow" style="padding:18px 0;"><span class="nn">01</span><span class="nt">When one AI checks another's work, start the checker fresh. No shared history, no anchoring.</span></div>
+            <div class="numrow" style="padding:18px 0;"><span class="nn">02</span><span class="nt">The same reason consultants are useful: they walk in without the baggage.</span></div>
+            <div class="numrow" style="padding:18px 0;"><span class="nn">03</span><span class="nt">Anthropic's name for the failure mode: "context rot". The more one conversation holds, the worse its recall gets.</span></div>
+          </div>
+          <div class="flowcap" style="font-family:'Lora',serif;font-style:italic;font-size:17px;">Don't ask the author to mark their own homework.</div>
+        </div>
+        <div style="flex:0 0 348px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:26px;box-shadow:0 6px 24px rgba(20,20,19,.08);">
+          <div style="font-family:'Inter',sans-serif;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:10px;">In practice &middot; off-stage</div>
+          <div style="font-family:'Lora',serif;font-size:20px;font-weight:500;line-height:1.25;color:var(--ink);">The freshest eyes are another model.</div>
+          <div style="font-family:'Inter',sans-serif;font-size:13.5px;line-height:1.55;color:var(--ink-mid);margin-top:14px;"><b style="color:var(--ink);">Verify against reality.</b> Attendees leaned on a tool called Playwright - the checker drives a real browser and reports what is actually there, not what a rotting context window remembers.</div>
+          <div style="font-family:'Inter',sans-serif;font-size:13.5px;line-height:1.55;color:var(--ink-mid);margin-top:12px;"><b style="color:var(--ink);">Cross-check with a different model.</b> Not mentioned on stage, but every attendee said it: run the important stuff past another model (Codex, GPT). It shares none of the first's blind spots.</div>
+          <div style="height:1px;background:var(--line);margin:16px 0;"></div>
+          <div style="font-family:'Inter',sans-serif;font-size:13px;line-height:1.5;color:var(--ink-soft);"><b style="color:var(--ink-mid);">When?</b> High-stakes output, or when the first model sounds a little too sure of itself.</div>
+        </div>
+      </div>
+      <div class="footer"><span>Code with Claude, debriefed</span><span class="wordmark">INSEAD AI Club</span></div>
+    </div>
+  </section>
+
+  <!-- 14 Verify Beat 3: make the checker automatic -->
+  <section class="slide" data-nid="n12">
+    <div class="pad centerpad">
+      <div class="eyebrow">Takeaway 01 &middot; And you can make the checker automatic &middot; Jiri De Jonghe, Anthropic</div>
+      <h1 class="title">Turn the second opinion into a score.</h1>
+      <div class="flow">
+        <div class="flowrow"><span class="fbox dark">Hard checks (images? font size?)</span><span class="farrow">&rarr;</span><span class="fbox dark">An AI judge on the look</span><span class="farrow">&rarr;</span><span class="fbox hot">A score you climb</span></div>
+      </div>
+      <div class="flowcap">A slide-making agent, graded automatically, iterated round after round until the score climbed. Verify scales - from a second opinion to a repeatable test. This deck was built this way; we'll show you live.</div>
+      <div class="footer"><span>Code with Claude, debriefed</span><span class="wordmark">INSEAD AI Club</span></div>
+    </div>
+  </section>
+
+  <!-- 12 Verify Beat 1: writer/editor -> creative tension -->
+  <section class="slide" data-nid="n10">
+    <div class="pad">
+      <div class="eyebrow">Takeaway 01 &middot; A checker in action &middot; Max Tatton-Brown</div>
+      <h1 class="title">One writes. One cuts.</h1>
+      <div class="tension">
+        <div class="tensionrow">
+          <div class="tbox light">
+            <div class="eb">The Writer</div>
+            <div class="qt">"You are a writer, not a template executor. You think in stories, not paragraphs."</div>
+            <div class="at">Wants to produce. Defends its draft.</div>
+          </div>
+          <div class="spark">
+            <span class="star">&#10022;</span>
+            <span class="lbl">Creative<br>tension</span>
+          </div>
+          <div class="tbox dark">
+            <div class="eb" style="color:#e8a98d;">The Editor</div>
+            <div class="qt">"You receive writing that is over-indulgent. You are here to kill their darlings."</div>
+            <div class="at">Wants it true. Will cut.</div>
+          </div>
+        </div>
+        <div class="tensionout">
+          <div class="arrowdown">&darr;</div>
+          <div class="pill">Outsized output. Higher quality than either reaches alone.</div>
+          <div class="cap">The tension is the quality. These are his actual prompts - and a human still signs off.</div>
+        </div>
+      </div>
+      <div class="footer"><span>Code with Claude, debriefed</span><span class="wordmark">INSEAD AI Club</span></div>
+    </div>
+  </section>
+
+  <!-- 13 Verify Beat 2: the pattern generalises -->
+  <section class="slide" data-nid="n11">
+    <div class="pad">
+      <div class="eyebrow">Takeaway 01 &middot; The shape is universal</div>
+      <h1 class="title">Writing is just the example.</h1>
+      <div class="sub2" style="font-family:'Inter',sans-serif;font-size:17px;color:var(--ink-mid);margin-top:12px;max-width:980px;">A maker and an adversarial checker. Never let the maker mark its own work. Swap the cast for your world - the friction stays.</div>
+      <div class="nums" style="margin-top:28px;">
+        <div class="numrow"><span class="nh">Writing / comms</span><span class="nt">Writer / Editor</span></div>
+        <div class="numrow"><span class="nh">Code</span><span class="nt">Engineer / Reviewer - "find the bugs and the edge cases"</span></div>
+        <div class="numrow"><span class="nh">A strategy memo</span><span class="nt">Author / Red team - "make the strongest case against this"</span></div>
+        <div class="numrow"><span class="nh">A financial model</span><span class="nt">Builder / Skeptic - "attack the assumptions"</span></div>
+        <div class="numrow"><span class="nh">Research / analysis</span><span class="nt">Analyst / Fact-checker</span></div>
+      </div>
+      <div class="footer"><span>Code with Claude, debriefed</span><span class="wordmark">INSEAD AI Club</span></div>
+    </div>
+  </section>
+
+
+  <!-- 15 takeaway 2 (mint) -->
+  <section class="slide section mint" data-nid="n13">
+    <div class="pad">
+      <div class="eyebrow">Takeaway 02</div>
+      <h1>The structure is easy. The skill is communication.</h1>
+      <div class="sub2">Anyone learns the four steps in five minutes. Give ten people the same steps and you get ten different results - the difference is how clearly each one says what they want. In the research step, the person who can articulate what they're after gets a far better answer. Nothing technical about it. (Adam Richardson teaches this first.)</div>
+      <div class="footer onmint"><span>Code with Claude, debriefed</span><span class="wordmark">INSEAD AI Club</span></div>
+    </div>
+  </section>
+
+  <!-- 16 the rewrites -->
+  <section class="slide" data-nid="n14">
+    <div class="pad">
+      <div class="eyebrow">Takeaway 02 &middot; From Anthropic's own training material</div>
+      <h1 class="title">Say the goal, not the instructions.</h1>
+      <div class="rewrites">
+        <div class="rw1">"Is Claude doing the work right?"</div>
+        <div class="rw1">"Keep it simple, don't over-engineer this."</div>
+      </div>
+      <div class="flowcap">What most of us type.</div>
+      <div class="footer"><span>Code with Claude, debriefed</span><span class="wordmark">INSEAD AI Club</span></div>
+    </div>
+  </section>
+
+  <section class="slide" data-nid="n15">
+    <div class="pad">
+      <div class="eyebrow">Takeaway 02 &middot; From Anthropic's own training material</div>
+      <h1 class="title">Say the goal, not the instructions.</h1>
+      <div class="rewrites">
+        <div class="rw1"><span class="del">"Is Claude doing the work right?"</span> &nbsp;<span class="ins">"Is Claude doing the right work?"</span></div>
+        <div class="rw1"><span class="del">"Keep it simple, don't over-engineer this."</span> &nbsp;<span class="ins">"This feature is an experiment. There's a real chance we delete it in a month. Don't build anything that would be painful to throw away."</span></div>
+      </div>
+      <div class="flowcap">Context, not constraints - the coding is already delegated; what's left is saying exactly what you want.</div>
+      <div class="footer"><span>Code with Claude, debriefed</span><span class="wordmark">INSEAD AI Club</span></div>
+    </div>
+  </section>
+
+
+  <!-- Takeaway 03 divider (mint) -->
+  <section class="slide section mint" data-nid="n17">
+    <div class="pad">
+      <div class="eyebrow">Takeaway 03</div>
+      <h1>Even the frontier disagrees with itself.</h1>
+      <div class="sub2">Same conference, opposite advice. One speaker plans for hours before a line gets built; another cut design-docs-before-code as theatre and prototypes first. Both work in their world. The lesson: steal the principle, not anyone's exact setup.</div>
+      <div class="footer onmint"><span>Code with Claude, debriefed</span><span class="wordmark">INSEAD AI Club</span></div>
+    </div>
+  </section>
+
+  <!-- Takeaway 03 quotes (restored two-card, white) -->
+  <section class="slide" data-nid="n17b">
+    <div class="pad">
+      <div class="eyebrow">Takeaway 03 &middot; In their own words</div>
+      <h1 class="title">Same question. Opposite answers.</h1>
+      <div class="dis">
+        <div class="disrow">
+          <div class="distile l"><div class="dh">Plan first.</div><div class="da">Kevin Collins &middot; founder, Echofold</div><div class="dc">Hours of planning before a single line gets built.</div></div>
+          <div class="discue"><div class="dtop">When to plan</div><div class="darrows">&rarr; vs &larr;</div></div>
+          <div class="distile r"><div class="dh">Prototype first.</div><div class="da">Fiona Fung &middot; Head of Eng, Claude Code</div><div class="dc">Her org cut design-docs-before-code as "theatre" - the doc, if needed, comes after.</div></div>
+        </div>
+        <div class="disrow">
+          <div class="distile l"><div class="dh">Load all the context.</div><div class="da">Kevin Collins</div><div class="dc">"I do the opposite" - every session starts "understand everything here".</div></div>
+          <div class="discue"><div class="dtop">How much context</div><div class="darrows">&rarr; vs &larr;</div></div>
+          <div class="distile r"><div class="dh">Keep context light.</div><div class="da">The standard advice</div><div class="dc">Stay under 70%, /clear between tasks, never auto-compact.</div></div>
+        </div>
+        <div class="disrow">
+          <div class="distile l"><div class="dh">Represent it in HTML.</div><div class="da">Thariq Shihipar &middot; Claude Code eng</div><div class="dc">"Almost no information Claude reads that you can't efficiently put in HTML."</div></div>
+          <div class="discue"><div class="dtop">Output format</div><div class="darrows">&rarr; vs &larr;</div></div>
+          <div class="distile r"><div class="dh">Markdown is enough.</div><div class="da">The default</div><div class="dc">The format agents think in - plain, diffable, everywhere.</div></div>
+        </div>
+      </div>
+      <div class="footline" style="font-family:'Lora',serif;font-style:italic;font-size:16px;margin-top:8px;">Same conference, opposite advice - and the frontier even disagrees with the standard playbook. Steal principles, not setups.</div>
+      <div class="footer"><span>Code with Claude, debriefed</span><span class="wordmark">INSEAD AI Club</span></div>
+    </div>
+  </section>
+
+
+
+  <!-- 21a the joke: the poverty of ambition (unattributed, deck's own voice) -->
+  <section class="slide section mint" data-nid="n20">
+    <div class="pad">
+      <div class="eyebrow">Takeaway 04</div>
+      <div class="quote">&ldquo;</div>
+      <h1 style="font-size:40px;line-height:1.2;">We've taught our most sophisticated neural networks, trained on the sum of human knowledge, to make Hollywood films, explain string theory to a child in Sanskrit, and clone your voice.</h1>
+      <div class="footer onmint"><span>Code with Claude, debriefed</span><span class="wordmark">INSEAD AI Club</span></div>
+    </div>
+  </section>
+
+  <!-- 21a punchline (with the PowerPoint line) -->
+  <section class="slide section mint" data-nid="n20b">
+    <div class="pad">
+      <div class="eyebrow">Takeaway 04</div>
+      <div class="quote">&ldquo;</div>
+      <h1 style="font-size:40px;line-height:1.2;">We've taught our most sophisticated neural networks, trained on the sum of human knowledge, to make Hollywood films, explain string theory to a child in Sanskrit, and clone your voice.</h1>
+      <div class="sub2" style="font-family:'Lora',serif;font-style:italic;font-size:26px;color:var(--ink);margin-top:22px;">But it'll never crack PowerPoint, right?</div>
+      <div class="footer onmint"><span>Code with Claude, debriefed</span><span class="wordmark">INSEAD AI Club</span></div>
+    </div>
+  </section>
+
+  <!-- 21b the trap + reframe -->
+  <section class="slide" data-nid="n21">
+    <div class="pad">
+      <div style="display:flex;gap:50px;align-items:center;height:100%;">
+        <div style="flex:1;">
+          <div class="eyebrow">Takeaway 04 &middot; The trap</div>
+          <h1 class="title">We keep using new tools to do the old things slightly better.</h1>
+          <div class="flowcap" style="margin-top:22px;font-size:17px;max-width:560px;">Treating AI as a faster, cheaper pair of hands. But if we invented presentation software today, it wouldn't be PowerPoint - so work where it's actually fluent.</div>
+        </div>
+        <div style="flex:0 0 auto;">
+          <img src="img/garry-tan.jpeg" alt="Garry Tan on X: old maps on a new territory" style="max-height:540px;max-width:420px;width:auto;border-radius:16px;border:1px solid var(--line);box-shadow:0 8px 30px rgba(20,20,19,.18);display:block;">
+        </div>
+      </div>
+      <div class="footer"><span>Code with Claude, debriefed</span><span class="wordmark">INSEAD AI Club</span></div>
+    </div>
+  </section>
+
+  <!-- 22 fluency ladder -->
+  <section class="slide" data-nid="n22">
+    <div class="pad">
+      <div class="eyebrow">Takeaway 04 &middot; How fluently Claude speaks each format</div>
+      <h1 class="title">Work where it is fluent.</h1>
+      <div class="nums" style="margin-top:36px;">
+        <div class="numrow"><span class="nn">01</span><span class="nh">Mother tongue</span><span class="nt">Markdown, HTML, plain prose. Fluent and beautiful with almost no effort.</span></div>
+        <div class="numrow"><span class="nn">02</span><span class="nh">Fluent second language</span><span class="nt">Code - .py, .js, .json, .sql. Trained on millions of repositories. Reliable.</span></div>
+        <div class="numrow"><span class="nn">03</span><span class="nh">Phrasebook</span><span class="nt">PowerPoint, Word, Excel. It thinks in markdown and translates at the end. Functional, not beautiful.</span></div>
+        <div class="numrow"><span class="nn">04</span><span class="nh">Holiday phrasebook</span><span class="nt">PDFs and images. Reads them well, produces them wobbly.</span></div>
+        <div class="numrow"><span class="nn">05</span><span class="nh">Foreign</span><span class="nt">Video, audio, 3D. Wrong tool entirely - ask Runway, ElevenLabs, Figma.</span></div>
+      </div>
+      <div class="flowcap">Plan and build in plain text. Translate at the very end, if you must.</div>
+      <div class="footer"><span>Code with Claude, debriefed</span><span class="wordmark">INSEAD AI Club</span></div>
+    </div>
+  </section>
+
+  <!-- 23 html -->
+  <section class="slide" data-nid="n23">
+    <div class="pad">
+      <div style="display:flex;gap:46px;align-items:center;height:100%;">
+        <div style="flex:1.4;">
+          <div class="eyebrow">Takeaway 04 &middot; And the native language, if we started today</div>
+          <h1 class="title">The unreasonable effectiveness of HTML.</h1>
+          <div style="font-family:'Lora',serif;font-style:italic;font-size:24px;color:var(--ink);line-height:1.4;max-width:640px;margin-top:34px;">"There is almost no set of information that Claude can read that you cannot efficiently represent with HTML."</div>
+          <div style="font-family:'Inter',sans-serif;font-size:15px;color:var(--ink-soft);margin-top:14px;">Thariq Shihipar, Anthropic</div>
+          <div style="font-family:'Lora',serif;font-style:italic;font-size:18px;color:var(--ink-mid);margin-top:24px;">This deck is a web page.</div>
+          <div style="display:flex;align-items:center;gap:14px;margin-top:24px;">
+            <img src="qr/html-post.png" alt="Scan: the unreasonable effectiveness of HTML" style="width:86px;height:86px;border:1px solid var(--line);border-radius:10px;background:#fff;">
+            <div style="font-family:'Inter',sans-serif;font-size:13px;color:var(--ink-mid);line-height:1.45;">Read the post<br><span style="font-size:11px;color:var(--ink-soft);">claude.com/blog &middot; Thariq Shihipar</span></div>
+          </div>
+        </div>
+        <div style="flex:0 0 360px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:28px;box-shadow:0 6px 24px rgba(20,20,19,.08);">
+          <div style="font-family:'Inter',sans-serif;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:10px;">The catch &middot; a culture call</div>
+          <div style="font-family:'Lora',serif;font-size:21px;font-weight:500;line-height:1.25;color:var(--ink);">The last mile is hand-work.</div>
+          <div style="font-family:'Inter',sans-serif;font-size:14px;line-height:1.55;color:var(--ink-mid);margin-top:12px;">An HTML deck is brilliant to about 90%. The final 10% - nudging a box that sits slightly wrong on slide 40 - is fiddly, by hand.</div>
+          <div style="height:1px;background:var(--line);margin:18px 0;"></div>
+          <div style="font-family:'Inter',sans-serif;font-size:14px;line-height:1.55;color:var(--ink-mid);">So it's a culture choice. Anthropic's is <b style="color:var(--ink);">"90% good enough is good enough."</b> Could you tell a Bain consultant to ignore a wonky box on slide 40?</div>
+        </div>
+      </div>
+      <div class="footer"><span>Code with Claude, debriefed</span><span class="wordmark">INSEAD AI Club</span></div>
+    </div>
+  </section>
+
+
+
+
+
+
+
+
+  <!-- 28 the CV move -->
+  <section class="slide" data-nid="n27">
+    <div class="pad centerpad">
+      <div class="eyebrow">A practical walk-through &middot; 2,740 applications, one role, 24 hours (Metaview)</div>
+      <h1 class="title">The thing reading your CV is an AI. Model it.</h1>
+      <div style="display:flex;gap:34px;align-items:stretch;margin-top:40px;">
+        <div class="promptpanel" style="margin-top:0;flex:1;">I want to apply for this job. Before I do<br>anything - based on how application-review<br>systems like Metaview's work, build me the<br><span class="pc">ideal candidate profile</span> this role is<br>screening for.<br><br><span class="pc">[paste the job spec]</span></div>
+        <div style="flex:0 0 420px;background:var(--card);border-radius:14px;padding:26px 28px;">
+          <div style="font-family:'Inter',sans-serif;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:12px;">What comes back - extract</div>
+          <div style="font-family:'Inter',sans-serif;font-size:13.5px;line-height:1.75;color:var(--ink-mid);">
+            <b style="color:var(--ink);">Role: Strategy Manager, AI products</b><br>
+            3-5 yrs in B2B SaaS or consulting - has shipped with AI tools, not just used them<br>
+            Owned a number: a P&amp;L, a pipeline, a portfolio<br>
+            Writes clearly. The CV itself is the writing sample<br>
+            This recruiter's taste: operators over researchers
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:26px;margin-top:30px;">
+        <div class="flowcap" style="margin-top:0;flex:1;">The whole loop on your job hunt: model the screener (ask &amp; research) &rarr; the profile is your target (plan) &rarr; rewrite your story backwards (build) &rarr; a fresh agent scores the gap (verify).</div>
+        <div style="flex:0 0 auto;text-align:center;">
+          <img src="qr/metaview.png" alt="Watch the Metaview talk" style="width:88px;height:88px;border:1px solid var(--line);border-radius:10px;background:#fff;display:block;">
+          <div style="font-family:'Inter',sans-serif;font-size:10.5px;color:var(--ink-soft);margin-top:5px;">Watch the talk</div>
+        </div>
+      </div>
+      <div class="footer"><span>Code with Claude, debriefed</span><span class="wordmark">INSEAD AI Club</span></div>
+    </div>
+  </section>
+
+
+
+
+  <!-- ===== APPENDED: CLOSING THESIS (7 slides) - reorder/cut as needed ===== -->
+
+  <!-- BRIDGE: step back to the wider world -->
+  <section class="slide section mint" data-nid="nbridge">
+    <div class="pad">
+      <div class="eyebrow">Switching gears</div>
+      <h1>Now let's step back.</h1>
+      <div class="sub2">That's the toolkit you can apply directly to your own work. Now let's zoom out and think about where this is all going in the world of work.</div>
+      <div class="footer onmint"><span>Code with Claude, debriefed</span><span class="wordmark">INSEAD AI Club</span></div>
+    </div>
+  </section>
+
+  <!-- THESIS 1: looks like the past -->
+  <section class="slide" data-nid="n28">
+    <div class="pad centerpad">
+      <div class="eyebrow">Where does this go</div>
+      <h1 class="title">On the face of it, the oldest pattern in economics.</h1>
+      <div class="flowcap">Cheap capital takes the low-value work. People move up. Steam, computers, and now AI.</div>
+      <div class="footer"><span>Code with Claude, debriefed</span><span class="wordmark">INSEAD AI Club</span></div>
+    </div>
+  </section>
+
+  <!-- THESIS 2: but it might be different (three camps folded in from old slide 26) -->
+  <section class="slide" data-nid="n29">
+    <div class="pad">
+      <div class="eyebrow">Where does this go</div>
+      <h1 class="title">But this time it might be different.</h1>
+      <div class="twocard" style="margin-top:26px;">
+        <div class="tc light">
+          <div class="eb">Every tool before</div>
+          <div class="qt">Specialised. We were the ones inventing the new work.</div>
+        </div>
+        <div class="tc dark">
+          <div class="eb">AI</div>
+          <div class="qt">General, and self-improving. It could make humans obsolete.</div>
+        </div>
+      </div>
+      <div class="footline">Nobody knows which: AI does it all (from utopia to extinction) &middot; humans keep their edge &middot; or it spreads too slowly to matter for decades. They only disagree on the long run; all agree the human edge is real now.</div>
+      <div class="footer"><span>Code with Claude, debriefed</span><span class="wordmark">INSEAD AI Club</span></div>
+    </div>
+  </section>
+
+  <!-- THESIS 3: pivot (mint) -->
+  <section class="slide section mint" data-nid="n30">
+    <div class="pad">
+      <div class="eyebrow">So what do we do</div>
+      <h1>So optimise for what we can know.</h1>
+      <div class="sub2">The long run is a write-off. But there are two things we actually can know.</div>
+      <div class="footer onmint"><span>Code with Claude, debriefed</span><span class="wordmark">INSEAD AI Club</span></div>
+    </div>
+  </section>
+
+  <!-- THESIS 4: 3A what's valuable now -->
+  <section class="slide" data-nid="n31">
+    <div class="pad">
+      <div class="eyebrow">What we can know</div>
+      <h1 class="title">First, what's valuable now.</h1>
+      <div class="nums">
+        <div class="numrow"><span class="nn">01</span><span class="nh">Judgement &amp; taste</span><span class="nt">Deciding what's worth doing, and whether it's any good.</span></div>
+        <div class="numrow"><span class="nn">02</span><span class="nh">Communication &amp; relationships</span><span class="nt">Getting the goal across, to people and to the machine.</span></div>
+        <div class="numrow"><span class="nn">03</span><span class="nh">Business &amp; industry sense</span><span class="nt">Knowing the market the work is for.</span></div>
+      </div>
+      <div class="flowcap">The short-run human edge. None of it technical.</div>
+      <div class="footer"><span>Code with Claude, debriefed</span><span class="wordmark">INSEAD AI Club</span></div>
+    </div>
+  </section>
+
+  <!-- THESIS 5: 3B capability vs diffusion (two-speeds content from old slide 25) -->
+  <section class="slide" data-nid="n32">
+    <div class="pad">
+      <div class="eyebrow">What we can know</div>
+      <h1 class="title">Second, capability is far ahead of diffusion.</h1>
+      <div class="twocard">
+        <div class="tc light">
+          <div class="eb">Capability</div>
+          <div class="hd">Racing. Exponential.</div>
+          <ul>
+            <li>The task length it handles on its own doubles every few months.</li>
+            <li>Already good enough for a growing share of knowledge work.</li>
+          </ul>
+        </div>
+        <div class="tc dark">
+          <div class="eb" style="color:#e8a98d;">Diffusion</div>
+          <div class="hd">Slow. Hard. Human.</div>
+          <ul>
+            <li>From <em>can</em> to actually doing the work: a gap of years, not months.</li>
+            <li>The PC took ~20 years to go from essential to everywhere - release, regulation, training, trust.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="footline">Diffusion is where the value is stuck - so being one of the few who actually moves fast is the edge. Start things, build, drive adoption ahead of the pack.</div>
+      <div class="footer"><span>Code with Claude, debriefed</span><span class="wordmark">INSEAD AI Club</span></div>
+    </div>
+  </section>
+
+
+  <!-- THESIS 6: MBA teaches both (mint) -->
+  <section class="slide section mint" data-nid="n33">
+    <div class="pad">
+      <div class="eyebrow">The point</div>
+      <h1><span class="del" style="color:rgba(20,20,19,.45);">You have to be technical to be good at AI.</span></h1>
+      <h1 style="margin-top:24px;">The real skills are judgement and communication, influence and change. Exactly what an MBA teaches.</h1>
+      <div class="sub2">Point judgement and communication <b>at the AI</b>, to direct it. Point influence and change <b>at the organisation</b>, to drive adoption. Manage the machine, and manage its adoption.</div>
+      <div style="margin-top:24px;display:flex;align-items:center;gap:18px;">
+        <img src="qr/changed.png" alt="Scan: has it changed your mind?" style="width:104px;height:104px;border:1px solid rgba(20,20,19,.18);border-radius:12px;background:#fff;">
+        <div style="font-family:'Inter',sans-serif;font-size:14px;color:var(--ink-mid);max-width:560px;line-height:1.5;">Scan: <b>has tonight changed your mind?</b> Tell us Yes or No - and your one word now. We'll put the room's start vs end on screen.<br><span style="font-size:12px;color:var(--ink-soft);">insead-ai.github.io/event-three/changed</span></div>
+      </div>
+      <div class="footer onmint"><span>Code with Claude, debriefed</span><span class="wordmark">INSEAD AI Club</span></div>
+    </div>
+  </section>
+
+  <!-- LIVE RESULTS A: what the room thinks now (embedded /results, real-time) -->
+  <section class="slide" data-nid="nlive1">
+    <iframe src="https://insead-ai.github.io/event-three/results/?embed=1&amp;view=leaderboard" title="Live - what the room thinks" style="position:absolute;inset:0;width:100%;height:100%;border:0;"></iframe>
+  </section>
+
+  <!-- LIVE RESULTS B: then vs now + changed your mind (embedded /results, real-time) -->
+  <section class="slide" data-nid="nlive2">
+    <iframe src="https://insead-ai.github.io/event-three/results/?embed=1&amp;view=beforeafter" title="Live - then vs now" style="position:absolute;inset:0;width:100%;height:100%;border:0;"></iframe>
+  </section>
+
+  <!-- THESIS 7: the three habits (close) -->
+  <section class="slide" data-nid="n34">
+    <div class="pad centerpad">
+      <div class="eyebrow">The takeaway</div>
+      <h1 class="title">Live in the moment. Be adaptable. Run the loop.</h1>
+      <div class="flow">
+        <div class="flowrow"><span class="fbox dark">Research</span><span class="farrow">&rarr;</span><span class="fbox dark">Plan</span><span class="farrow">&rarr;</span><span class="fbox">Build</span><span class="farrow">&rarr;</span><span class="fbox hot">Verify</span></div>
+      </div>
+      <div class="flowcap">Two ways to think, one thing to do. The window is open now.</div>
+      <div class="footer"><span>Code with Claude, debriefed</span><span class="wordmark">INSEAD AI Club</span></div>
+    </div>
+  </section>
+
+
+  <!-- take home: who to follow -->
+  <section class="slide" data-nid="n35">
+    <div class="pad">
+      <div class="eyebrow">Take home &middot; who to follow</div>
+      <h1 class="title">Don't read everyone. Pick two or three.</h1>
+      <div class="wtf">
+        <div class="wtfmain">
+          <div class="wtfrow">
+            <div class="hero-q"><img src="qr/mollick.png" alt="QR"><div><div class="hl">01 &middot; If you only pick one</div><div class="qn">Ethan Mollick</div><div class="qd">One Useful Thing. The one to follow.</div></div></div>
+            <div class="qcardq"><img src="qr/evans.png" alt="QR"><div class="qn">Benedict Evans</div><div class="qd">Strategy lens. Weekly.</div></div>
+            <div class="qcardq"><img src="qr/willison.png" alt="QR"><div class="qn">Simon Willison</div><div class="qd">Daily log of what's possible.</div></div>
+          </div>
+          <div class="wtfrow">
+            <div class="qcardq"><img src="qr/karpathy.png" alt="QR"><div class="qn">Andrej Karpathy</div><div class="qd">First principles, built intuition.</div></div>
+            <div class="qcardq"><img src="qr/amodei.png" alt="QR"><div class="qn">Dario Amodei</div><div class="qd">Where the frontier's heading.</div></div>
+            <div class="qcardq"><img src="qr/dwarkesh.png" alt="QR"><div class="qn">Dwarkesh Patel</div><div class="qd">Long-form interviews. Best signal-to-noise.</div></div>
+            <div class="qcardq"><img src="qr/azhar.png" alt="QR"><div class="qn">Azeem Azhar</div><div class="qd">AI x geopolitics x economics.</div></div>
+          </div>
+        </div>
+        <div class="wtfside">
+          <div class="sh">Daily and builders</div>
+          <div class="srow"><img src="qr/trq212.png" alt="QR"><div><div class="qn">Thariq Shihipar</div><div class="qd">Anthropic. The HTML line tonight is his. @trq212</div></div></div>
+          <div class="srow"><img src="qr/rundown.png" alt="QR"><div><div class="qn">The Rundown</div><div class="qd">Daily newsletter. Top-of-funnel scan.</div></div></div>
+          <div class="srow"><img src="qr/zvi.png" alt="QR"><div><div class="qn">Zvi Mowshowitz</div><div class="qd">Don't Worry About the Vase. Weekly roundup.</div></div></div>
+          <div class="srow"><img src="qr/vellotti.png" alt="QR"><div><div class="qn">Carl Vellotti</div><div class="qd">Claude Code for PMs course.</div></div></div>
+          <div class="srow"><img src="qr/riley.png" alt="QR"><div><div class="qn">Riley Brown (YouTube)</div><div class="qd">Hands-on AI tooling.</div></div></div>
+          <div class="srow"><img src="qr/isenberg.png" alt="QR"><div><div class="qn">Greg Isenberg (YouTube)</div><div class="qd">AI x startups.</div></div></div>
+        </div>
+      </div>
+      <div class="footer"><span>Code with Claude, debriefed</span><span class="wordmark">INSEAD AI Club</span></div>
+    </div>
+  </section>
+  <!-- RESOURCES: three buckets with QR codes -->
+  <section class="slide" data-nid="n36">
+    <div class="pad">
+      <div class="eyebrow">Go deeper &middot; scan, or grab them all in the WhatsApp</div>
+      <h1 class="title">If you want to read further.</h1>
+      <div style="display:flex;gap:34px;margin-top:28px;"><div style="flex:1;"><div style="font-family:'Inter',sans-serif;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);font-weight:600;margin-bottom:14px;">The method &amp; the agents</div><div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:13px;"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKQAAACkAQMAAAAjexcCAAAABlBMVEUUFBP////qUhZjAAABbUlEQVR42tWXMW7FMAxDhV5A978lb+Dy0Qm6/KUAh9ZDPpyB1qdIWpnzYWn+8NuZ2R2NtHM2W33Np/Wbt0AdAxqMI3bZdnAB0/pXXsu2hmtYlyt2VVyzQL0mvIgLoSYAmlXkN3r4WTU93OWSfYSo3uqr8OB2Gc1ti9Lgu4Irenbe3lkU6tSrkMET1+209BDVRmbIGDZKfdMjihNcjujozF4DblEx+5IedPJUDsB7rTx7VBtUoqelM9ybpsECCVzyxesMe8MxQVK0fAyztA0xTC13ko44AqZv/ZV6k2BL6GgfRXfqFUxM8gwuSvy6yGQ6FVsWU/Ob640goomp5XruysdwywzRuudxWjiGhJRdyh1h5tzGAyG1fHj/PYQk0kr3W0QQX0yujZqPT+Y+biDYLtWb+SFSO3HFnuY8mfEsMt7mPImTN7Lgui/izpUDspgebtKGmYea1eM3eXZ1cWr5ED0kG+7Ufprz5H/5zvoGdZTJX/jYI5YAAAAASUVORK5CYII=" style="width:62px;height:62px;flex:0 0 auto;image-rendering:pixelated;border:1px solid var(--line);border-radius:6px;background:#fff;"><div style="padding-top:1px;"><div style="font-family:'Lora',serif;font-size:12.5px;font-weight:600;line-height:1.2;color:var(--ink);">Building effective agents</div><div style="font-family:'Inter',sans-serif;font-size:10px;color:var(--ink-mid);margin-top:2px;">Anthropic Engineering</div></div></div><div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:13px;"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJQAAACUAQMAAABP8pKXAAAABlBMVEUUFBP////qUhZjAAABK0lEQVR42s2WMY4DUQhDrb0A978lN2D9PMk2aVaCIr+IMlM8MdiYr/k4ra96J6mmZkrTeegffZ7/vlNQI8j1cLc8lUE+av/xwwHPqG6XdsWrnm4z54IXKVziUf+Q9O8c6Bspnt51dFn3zyW5b/lgvLjuH6BIoXhmy3v3jfIyJVs9Osd12oJ7PURxbmAzvSiz5YURBzbNrD0varhO67zvn0eNLBgmmERY8xR5Q8XR+/l1cQhimi78N8/UdgbvwH8QOz9WeJ9XieWiPhJh7z8UTQbGLn2hBzEfhcXM7fPZNVVMSG4dfC9bY/TS+SKf6+0a0Af7o7FyZZFoLvYbyxckkXVyP2BAnjm+4JFYmd6DfA4PIKlKwBz0j6lgz134L/cDBgMxEq97/33vffcXotdWnGaZR0QAAAAASUVORK5CYII=" style="width:62px;height:62px;flex:0 0 auto;image-rendering:pixelated;border:1px solid var(--line);border-radius:6px;background:#fff;"><div style="padding-top:1px;"><div style="font-family:'Lora',serif;font-size:12.5px;font-weight:600;line-height:1.2;color:var(--ink);">Emotion concepts in an LLM</div><div style="font-family:'Inter',sans-serif;font-size:10px;color:var(--ink-mid);margin-top:2px;">Anthropic (agent personality)</div></div></div></div><div style="flex:1;"><div style="font-family:'Inter',sans-serif;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);font-weight:600;margin-bottom:14px;">The world of work</div><div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:13px;"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJQAAACUAQMAAABP8pKXAAAABlBMVEUUFBP////qUhZjAAABLElEQVR42s1WwQ3DQAxCXYD9t/QGLuCqn34q2Y+cIiWXBzIGfIf+WYVH/QNAvwsselMv/K5//6HZeqr8xWy2eKCAoNqq6M0BnhhT3cAVHksLnM1B/6awm/5Z0u860NcL1W6fy5OHtv1D/FKmne8dXmwegU2+1nyFyCRE8ZClsa1PXMvKUpStzppvuTq3sJOTdX00ot1MIfa+f+4Z7JRos64PkzXrK7y9X4QwsqhAWOJ13tzA4sd/3PdvTGNTZ8as/SIsO1Ddy5he882gL6tsRx/4JSfI0O2beW/GncGAg3klMOtRJ/OFE4zPqD7IbzvCPSdIkxfnh+dABvXB/Mv51smHNWGfnL+NqRB94xeEdnZH9w0bJha8uF917kQJSV/cDxw2Z6T6xH/Pve++AYl2WcZJ5FsbAAAAAElFTkSuQmCC" style="width:62px;height:62px;flex:0 0 auto;image-rendering:pixelated;border:1px solid var(--line);border-radius:6px;background:#fff;"><div style="padding-top:1px;"><div style="font-family:'Lora',serif;font-size:12.5px;font-weight:600;line-height:1.2;color:var(--ink);">From Hierarchy to Intelligence</div><div style="font-family:'Inter',sans-serif;font-size:10px;color:var(--ink-mid);margin-top:2px;">Block / Jack Dorsey</div></div></div><div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:13px;"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKQAAACkAQMAAAAjexcCAAAABlBMVEUUFBP////qUhZjAAABcklEQVR42tWXQW4DMQwDiX7A//+lfqByaOfWSwEeWiNI1rsAoaVIWtH+sEZ/+K6kc3iomdVhO1/6af3mrvasP2B78e1tB9dgQ6lgz922cE3BwMXcmou4ZtawRu/hmlB3y33r8qvXs7dqemC50EswbJiPDg95fSvB5FrQKvHgblGw0aRx3b6s4BrIcqBhxpxN0ZW+mVoNRKRwe6+DC72QYRJ8MWdLeoDhPcklzJx9Rw/i3YU7+FWNX8MO+JSdiGj5gtSNzk6EVsJ1/9O5sIDaSjzEYzkt0C8p3/GFbYGEX+1q6fdcT0QM4NfqTYLd0MHSp6RflDUswifR0/IxHcPGH/2W9EC9UPw2U8sHJSVT8D0ySvyGVFLtOW5bPs6MhYg5jVr6DQt0juEhA1WtXmJ3SHSOi5Z+GRgUX6CMDCa9efKdGNFFKx8+I+omeNSc+5LAOvcsauJiinPDopVn4XeZ954i1NODXbaJ3iRQb578P/+zvgGH8dWtWnq6+wAAAABJRU5ErkJggg==" style="width:62px;height:62px;flex:0 0 auto;image-rendering:pixelated;border:1px solid var(--line);border-radius:6px;background:#fff;"><div style="padding-top:1px;"><div style="font-family:'Lora',serif;font-size:12.5px;font-weight:600;line-height:1.2;color:var(--ink);">Salarymen, specialists, small businesses</div><div style="font-family:'Inter',sans-serif;font-size:10px;color:var(--ink-mid);margin-top:2px;">Noah Smith, Noahpinion</div></div></div></div><div style="flex:1;"><div style="font-family:'Inter',sans-serif;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);font-weight:600;margin-bottom:14px;">The long run</div><div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:13px;"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJQAAACUAQMAAABP8pKXAAAABlBMVEUUFBP////qUhZjAAABLklEQVR42s2WQQ7EMAgD0X6A///SP2AZp91LLyvBoVFVJTlYGIxJ1GMpXnUXEamUFHkdPvFc/95FZfWXCmV/HKZ4kR0dgNV4HBbwCq6lWsLrX2dSO3jl4OTtQv4o6W8t1PdWjsvh3ZCvUEpkIUHN8QoUeBd0F/LXKA1YADqVU76N4Jr0PwGdxiekR5BBm2ijvkhP5p6a54/kqbXcwXExxJNtyjkUYY7x5NRZNNRmrD8UDV23iGoen/CrLgQ+XXN/brrdtyDXSr8lk+M0MIUe8719mUw26Fh/RYvA1c467l/lKQlyLs354lJn+FqBC/ojb/bB1mBoY36cp0MeR12Yb0Y6g3M+PzzP7dFpT1jA8wMBL01kvfLeoBZnKi3kD3vR1SO18T5wnKod/3vze/cLwDty6fkY5JIAAAAASUVORK5CYII=" style="width:62px;height:62px;flex:0 0 auto;image-rendering:pixelated;border:1px solid var(--line);border-radius:6px;background:#fff;"><div style="padding-top:1px;"><div style="font-family:'Lora',serif;font-size:12.5px;font-weight:600;line-height:1.2;color:var(--ink);">When AI builds itself</div><div style="font-family:'Inter',sans-serif;font-size:10px;color:var(--ink-mid);margin-top:2px;">Anthropic</div></div></div><div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:13px;"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJQAAACUAQMAAABP8pKXAAAABlBMVEUUFBP////qUhZjAAABKklEQVR42s2WOw7CQAxELS7g+9/SNzDzbKChQfIULChRUoyc+e1Gf62Kv3oXEZlzz32oR3yvX99FZ3cClQmwHq54L5SqRXbgCXH+acLjUg2iAY+P1Q9BHPyNvu9l0JeVWEdo66ErfxVYM6IKma/zgVCRkKiPrzTwtworLAI+zze0TTYwTd3zkTAo+zGqYT4Yk6gbEMly1TdoA7kZzzT+uftPrE29SA7B3v2330k0SNwVD/8VNqQS7nrgFg2FU+TA+3wTMtp0Apxn/1W/b9BYYeIvPpV/9QsSjw+xSzv6ZRr6Vfie/BLd3t3X0c8BJiFRAbZh/2C4HIXz3ve9kWO22eQs54MeR88ZxoBHoU5xsZM4zhvTe/iv0sFfA7XV6jkfsLlN7O798t/n3ScRh1/862h++QAAAABJRU5ErkJggg==" style="width:62px;height:62px;flex:0 0 auto;image-rendering:pixelated;border:1px solid var(--line);border-radius:6px;background:#fff;"><div style="padding-top:1px;"><div style="font-family:'Lora',serif;font-size:12.5px;font-weight:600;line-height:1.2;color:var(--ink);">My AI Opinions</div><div style="font-family:'Inter',sans-serif;font-size:10px;color:var(--ink-mid);margin-top:2px;">Scott Alexander, ACX</div></div></div><div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:13px;"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJQAAACUAQMAAABP8pKXAAAABlBMVEUUFBP////qUhZjAAABL0lEQVR42s1WsQ0DQQyysoD335INHMCvNGki4SInJf/3BcKGw1fztVB/9a2qGtN89rN51ff69VsRaYQn5G5vQjzCkDmxwB83B3gkOIAIHuGxkV2FucAboaDH9eb9k6SfdaCvVokXO9j2UNo/VVsyjPh1ikcc2U+lUmFc1EsMCHkkTcrPEHI0MW3BVF9YDWKNaCLFEzemgSqmwDjJA4HCj6lcX1hgFe4Tkuohz9ks/PexS/Wlslhbjxim9VoFiVzuY1wv4NzvjfsYr81JRY+JTuxnmw7Y/uXzQ9EsOI2QRsxvQdrGQR3kfftwjP1XB/7blHI6t9nm80OHTm+aIHOQB5sG9Xj65H6wyVq5/zzPNXslrUfxAT87BTb3Rf+o7krRef/2fvBElqL1wH//e999AzqYY+kQ0ttNAAAAAElFTkSuQmCC" style="width:62px;height:62px;flex:0 0 auto;image-rendering:pixelated;border:1px solid var(--line);border-radius:6px;background:#fff;"><div style="padding-top:1px;"><div style="font-family:'Lora',serif;font-size:12.5px;font-weight:600;line-height:1.2;color:var(--ink);">AI as Normal Technology</div><div style="font-family:'Inter',sans-serif;font-size:10px;color:var(--ink-mid);margin-top:2px;">Narayanan &amp; Kapoor</div></div></div></div></div>
+      <div class="footline">Building effective agents is the technical one: paste it into Claude and ask it to explain, and how the principles help a task you actually have.</div>
+      <div class="footer"><span>Code with Claude, debriefed</span><span class="wordmark">INSEAD AI Club</span></div>
+    </div>
+  </section>
+</div>
+<script>
+  (function(){
+    var p = new URLSearchParams(location.search);
+
+    // ---- single-slide presenter mode (?slide=N) ----
+    if(p.has('slide')){
+      var n = parseInt(p.get('slide'),10);
+      var slides = document.querySelectorAll('.slide');
+      var deck = document.querySelector('.deck');
+      document.documentElement.style.margin='0'; document.body.style.margin='0';
+      deck.style.padding='0'; deck.style.gap='0'; deck.style.display='block';
+      slides.forEach(function(s,i){
+        if(i === n-1){ s.style.boxShadow='none'; s.style.display='block'; s.style.margin='0'; }
+        else { s.style.display='none'; }
+      });
+      return;
+    }
+
+    // ---- speaker-notes mode (?notes) ----
+    if(!p.has('notes')) return;
+
+    // Draft point / what-we're-doing / line for each slide, in order.
+    // Edit freely in the browser; your edits override these and auto-save.
+    var DEFAULTS = {
+      "n1": {p:`Setup/ Context: Introduce & context of event`, d:``, l:`- A few weeks ago we got to go to the code w claude conference - we're here to share what we learned`, f:``},
+      "n2": {p:`Setup/ Context: Get people thinking. Capture the room's prior in one word. Get participation early and seed the belief we'll overturn.`, d:``, l:`Before we start - One word: the most important skill for being good at AI. Don't overthink it.`, f:``},
+      "n3": {p:`Belief Shift: I am behind and there's no point me trying >> I am motivated to get stuck in and this struggling to keep pace is just a mindset shift we all have to adopt. Open to learn and listen.`, d:``, l:`- If you feel behind, so does everyone building this. If you don't feel behind, then go take over the world.
+- Feeling behind just the normal state now, as humans try to keep up with AI progress. The important thing is to get stuck in and learn new things. 
+- It can feel overwhelming, but that is what everyone feels - even the co-founder of OpenAI!`, f:``},
+      "n4": {p:`Belief Shift: AI is growing fast >> AI is growing reeeeallly fast & I am excited about what i can do with it`, d:``, l:`There's a reason we're feeling behind. Task length an AI can do on its own is doubling every few months. Minutes last year, hours now. No wonder people are struggling to keep up. But also this is very exciting and we should try to take advantage of it as much as possible.`, f:`Disclaimer mythos`},
+      "n5": {p:`Setup/ Context: Name the belief we're going to dismantle. Pause. Let it sit. Point back at the poll words on the wall.`, d:``, l:`Most of us believe this. Look at your words - most are technical. Hold that thought.`, f:`kill`},
+      "n6b": {p:``, d:``, l:``, f:``},
+      "n6": {p:`Setup / Context: Explain the conference we went to to earn credibility for content we're delivering. Set the scene with specifics about the feeling & excitement in the room, as well as the vibe.`, d:``, l:`-  The conference we went to had speakers from claude giving workshops and talks, and founders who have used claude in their companies
+- It was aimed at founders and builders - so the level was pitched at people on the forefront of using AI to actually create businesses 
+- On the vibe & atmosphere: [3 points on slide]`, f:`headline - a closer look at the claude culture
+
+slide above for context of event - me`},
+      "n7": {p:`Belief Shift: To build a company or software or even automate my workflows using Claude Code, I need to be very technical >> Management expertise is actually much more important and you don't need to know how to code at all. The need for technical skills is massively declining.`, d:``, l:`The biggest takeaway from the event was how little people talked about the technical side. People don't spend their time coding any more. All the conversations were about how to get claude doing the best job it can do - everything, in essence, was a management skill.`, f:`ADD IN RESULTS OF POLL ABOVE
+
+We need to be careful this doesn't read as "the people who build Claude Code aren't doing anything technical." They're highly technical engineers and researchers doing deeply technical work, and implying otherwise could make us sound naive and arrogant, especially if you want to post on LinkedIn. They aren't coding directly as much any more but I'm sure the stuff they are doing is not just 'management skills'. The conference was for USERS of Claude Code, not its builders, and we need to hold this distinction. What we actually want to claim: founders and builders at the frontier barely hand-code any more, and people are shipping software and whole businesses on Claude Code without writing code themselves. We're not arguing an MBA could land a technical job at Anthropic. We're arguing they can build a business with Claude Code. Probably not too much of a slide change (could say Builders on the forefront of the industry don't really write code anymore) but more of a positioning thing we need to be aware of not coming off sounding ignorant. And distinguish between 'technical stuff' and direct coding. ... long winded sorry !! do you agree?`},
+      "n8": {p:`Belief Shift: I just need to write a prompt and the rest is a black box >> There is a good structure to get claude producing better output`, d:``, l:`Across the whole conference, everything kept coming back to this structure: Ask, plan, build, verify.
+
+- Ask & research: before anything gets made, you load Claude up on context, the files, the docs, the examples, what "good" looks like. You discuss what you want and get it to ask you questions. This is the single biggest lever. The outcome is basically set here, not in some clever prompt later. Go deeper than feels natural.
+  - Plan: make it lay out the approach before it writes a line, the steps, the structure, the trade-offs. You review and fix the plan, not the output. A wrong plan is cheap to catch here and expensive to unpick once it's built.
+  - Build: the machine does the typing. This is the step that feels like the whole job and is actually the smallest part of it. It just executes the plan you already agreed.
+  - Verify: give the work a checker, a fresh, adversarial second pass that marks the output against what you said good looks like. The highest-leverage step, and the one almost nobody does. This needs to be a fresh eyes view - never the author marking its own homework.`, f:``},
+      "n9": {p:`Belief Shift: Checking means asking Claude 'are you sure' or 'make it better' >> Verification is the highest-leverage step almost nobody does and requires an independent verifier (agent without context) and clearly thought through criteria with pass/fail bounds`, d:``, l:`- Verification is a high-leverage step that needs to be structured and built in as a key part of your processes 
+- You need to set an independent agent to audit the work 
+- This agent needs to have clear criteria they are marking against - can be both deterministic (code-based checks) and judgement (model-graded checks). Coming up with these criteria is very important, particularly for routine tasks/ skills/ processes that you are trying to set up.`, f:`do you think we need to distinguish between repeat skills vs one-off? feel like the process is a bit different.`},
+      "n10": {p:`Concrete example: writer vs editor`, d:``, l:`Eg when writing do writer & editor...`, f:``},
+      "n11": {p:`Belief Shift: Not sure how to apply this >> I can apply in every situation`, d:``, l:`This is the same across lots of tasks...`, f:`Add coding example`},
+      "n12": {p:`Belief Shift: this is something i build each time >> this is highly structured and replicable`, d:``, l:`This is something that is especially helpful for repeat tasks / skills. Can create a bunch of criteria that you turn into a score and get the agent to iterate on it. Defining and refining criteria is just as important as writing the prompt for something you are repeating. Can refine and develop over time.`, f:`shift 2 slides up so explain with rest of checker theory before going into examples? think would flow better`},
+      "n13": {p:``, d:``, l:``, f:``},
+      "n14": {p:``, d:``, l:``, f:``},
+      "n15": {p:``, d:``, l:``, f:``},
+      "n16": {p:``, d:``, l:``, f:`NEW. we talk about this in the verifier - delete??`},
+      "n17": {p:``, d:``, l:``, f:`Freddie to get more stuff in`},
+      "n18": {p:``, d:``, l:``, f:`kill`},
+      "n19": {p:``, d:``, l:``, f:`kill`},
+      "n20": {p:``, d:``, l:``, f:`Next slide wiht ppt bit 
+Takeawya 4`},
+      "n21": {p:``, d:``, l:``, f:`4`},
+      "n22": {p:``, d:``, l:``, f:`4`},
+      "n23": {p:``, d:``, l:``, f:`4`},
+      "n27": {p:`Belief Shift: Not sure how to get started applying this stuff>> there is a very relevent and easy thing i can try it out on`, d:``, l:`- This is an example about how to use the build loop 
+- The thing reading your CV is an AI. Build its ideal-candidate profile first, then write your story backwards.
+- explain each step, relating to ask plan build verify`, f:`Add qr that is link to talk`},
+      "nbridge": {p:`Setup/ Context: signpost that switching modes into thinking about how to apply this to the firm and the future of work. make it directly relevant to the MBA.`, d:``, l:``, f:``},
+      "n28": {p:`Setup/ Context: ground our thinking in previous technological revolutions`, d:``, l:`On the face of it, this is the oldest pattern in economics: cheap capital keeps taking the lower-value tasks and people keep moving up to higher-value ones. Steam did it to muscle, computers did it to calculation, and each time entirely new kinds of work appeared that nobody could have pictured beforehand: a weaver in 1800 couldn't have imagined "software engineer." So the optimistic case isn't just that we move up, it's that we keep inventing rungs we can't yet see, and the people who said the ladder was running out have always been wrong.`, f:``},
+      "n29": {p:`Belief Shift: Similar pattern to past is likely >> Actually there is one big structural difference (generality, RSI)`, d:``, l:`But this time it might be different, and here's the structural reason why. Every previous technology was specialised: a power loom weaves, it can't follow you to the new job. And crucially, we were always the ones inventing the new work, opening new fields, deciding what to do next; we didn't just climb new rungs, we built them. Humans were the frontier. AI is the first technology general and creative enough to do that itself, and recursive self-improvement is the sharpest case: AI improving AI, inventing the next thing faster than we can. So the escape hatch of history isn't just "new jobs we can't yet imagine", it's that we were the ones who imagined them, and the risk is that AI becomes the one on the frontier instead, so we are no longer the source of new things to do. That makes the long run genuinely unpredictable: anywhere from a real utopia (good by our values too, not just theirs), to one that only looks like utopia to the people inside it (everyone's content, but on engineered preferences we might recoil from), to a bread-and-circuses equilibrium (comfortable on basic income and endless entertainment, but with no purpose or power, like the Roman crowd), to a lasting underclass (most people permanently sidelined, the gap never closing), to the end of the human race (a misaligned AI eliminates or disempowers us). My view is that's so far beyond what we can know that it isn't worth personally optimising for.`, f:``},
+      "n30": {p:`Setup/ Context:`, d:``, l:`So we optimise for what we *can* know with reasonable probability.`, f:``},
+      "n31": {p:`Belief Shift: Panic we dont know whats coming >> there are things that i know in the short run i can optimise around`, d:``, l:`**3A - what is valuable in the short run:** the human edge on the jagged frontier is judgement and taste, communication and relationships, and business or industry knowledge, none of them technical. The skills we've been talking about tonight.`, f:``},
+      "n32": {p:`Belief Shift: Panic we dont know whats coming >> there are things that i know in the short run i can optimise around`, d:``, l:`*3B - how the world moves:** capability has run ahead of adoption. Organisations are slow, and fast movers gain. So act on it: start things, build things, get involved, and push the businesses you're in to adopt ahead of the pack. That is where the short-run advantage actually lives and will determine who gets ahead.
+
+ In the real economy and business world, change is often the hardest thing for organisations to do.  They get stuck in their ways, they have the capabilities that have made them successful in the past, not the ones they need to be successful in the future.  Most firms will be a long way back from the frontier, and creating a true competitive advantage against them has never been so feasible.  There is an unprecedented opportunity to extract value from these firms.`, f:``},
+      "n24": {p:`Belief shift: Culture, mindset and values are second order >> Culture, mindset and values shape the way we are able to take advantage of some of these new technologies`, d:``, l:`- The culture of organisations and their mindset is important and may need to shift to be able to take advantage of some of these developments.
+- E.g. At Anthropic they have a belief that 90% good enough is good enough
+- It may be up to some of us to try to drive through some of these changes 
+- Relates to OB stuff around how culture shapes organisations - need to be mindful about what kind of cultures drive good & innovative usage of AI.`, f:`kill`},
+      "n33": {p:`Belief Shift: I am in a bad place >> I am optimally positioned, I just need to think about how to transfer my existing skills`, d:``, l:`And both of these are exactly what an MBA teaches, just aimed at new targets:
+   - For **3A**, judgement, communication and taste are things we learn in the MBA. We just learn and apply them in a people-centric setting; the shift is to practise applying them in an AI-centric setting too, which is exactly what tonight has been about, and I hope we've shown how transferable they are.
+   - For **3B**, you point influence, change management and execution **at the organisation**, to drive adoption. Driving change inside an org is the core of what an MBA trains, and it is precisely what capturing the adoption gap takes.
+   - So we have both edges: manage the machine, and manage the organisation's adoption of it. That is the big advantage.`, f:``},
+      "nlive1": {p:``, d:``, l:``, f:`make prev thought`},
+      "nlive1b": {p:``, d:``, l:``, f:`make prev thought`},
+      "nlive2": {p:``, d:``, l:``, f:`make same format - just after`},
+      "n34": {p:`Closing thoughts`, d:``, l:`So the whole thing comes down to three habits. **Live in the moment:** don't freeze trying to optimise for a long run nobody can predict; act on what's knowable now, and the window is open now. **Be adaptable:** when you can't see the destination, adaptability is the one skill that pays off in every version of the future. **Run the loop:** research, plan, build, verify, the concrete habit that turns all of it into practice.`, f:``},
+      "n35": {p:`Resources`, d:``, l:``, f:``},
+      "n36": {p:`Resources`, d:``, l:``, f:``},
+      "nconf": {p:`Setup/ Context: explain the conference we went to`, d:``, l:`- The conference we went to had speakers from claude giving workshops and talks, and founders who have used claude in their companies
+- It was aimed at founders and builders - so the level was pitched at people on the forefront of using AI to actually create businesses`, f:``}
+    };
+
+    var KEY = 'cwc_notes_v3_';
+    document.body.classList.add('notesmode');
+
+    var head = document.createElement('div');
+    head.className = 'noteshead';
+    head.innerHTML =
+      '<span class="ttl">Code with Claude &middot; speaker notes</span>' +
+      '<span><span class="hint">Auto-saves in this browser &middot; </span>' +
+      '<button id="cwcExp">Export notes</button>' +
+      '<button id="cwcClr">Clear my edits</button></span>';
+    document.body.insertBefore(head, document.body.firstChild);
+
+    var deck = document.querySelector('.deck');
+    var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+
+    function label(s){
+      var eb = s.querySelector('.eyebrow, .hl');
+      var h = s.querySelector('h1');
+      var t = (eb && eb.textContent.trim()) || '';
+      var ht = (h && h.textContent.trim()) || '';
+      if(t && ht) return t + ' · ' + ht;
+      return ht || t || 'Slide';
+    }
+    function getVal(nid, k, def){
+      var saved = localStorage.getItem(KEY + nid + '_' + k);
+      return saved !== null ? saved : (def || '');
+    }
+    function makeField(nid, k, def){
+      var ta = document.createElement('textarea');
+      ta.rows = (k === 'f' || k === 'p') ? 3 : 2;
+      if(k === 'f') ta.className = 'fred';
+      ta.value = getVal(nid, k, def);
+      ta.addEventListener('input', function(){ localStorage.setItem(KEY + nid + '_' + k, ta.value); });
+      return ta;
+    }
+
+    function mergedPoint(d){ return (d.p || '') + (d.d ? ' ' + d.d : ''); }
+    var FIELDS = [['Point of the slide / what to land','p'], ['The line to say','l'], ['Comments for Freddie','f']];
+
+    // Draft section / act each slide belongs to - edit to re-cut the structure.
+    var SECTIONS = {
+      "n1": 'Open',
+      "n2": 'Open',
+      "n3": '1 · The pace',
+      "n4": '1 · The pace',
+      "n5": '2 · The belief',
+      "n6": '2 · The belief',
+      "n7": '2 · The belief',
+      "n8": '3 · The method',
+      "n9": '3 · The method',
+      "n10": '3 · The method',
+      "n11": '3 · The method',
+      "n12": '3 · The method',
+      "n13": '3 · The method',
+      "n14": '3 · The method',
+      "n15": '3 · The method',
+      "n16": '3 · The method',
+      "n17": '3 · The method',
+      "n18": '4 · Demo',
+      "n19": '4 · Demo',
+      "n20": '5 · Provocations',
+      "n21": '5 · Provocations',
+      "n22": '5 · Provocations',
+      "n23": '5 · Provocations',
+      "n24": '5 · Provocations',
+      "n25": '6 · Close',
+      "n26": '6 · Close',
+      "n27": '6 · Close',
+      "n28": '7 · Thesis',
+      "n29": '7 · Thesis',
+      "n30": '7 · Thesis',
+      "n31": '7 · Thesis',
+      "n32": '7 · Thesis',
+      "n33": '7 · Thesis',
+      "n34": '7 · Thesis',
+      "n35": 'Take-home',
+      "n36": 'Take-home'
+    };
+
+    slides.forEach(function(s, i){
+      var nid = s.getAttribute('data-nid');
+      var d = DEFAULTS[nid] || {p:'',d:'',l:''};
+      var row = document.createElement('div'); row.className = 'noterow';
+      var sc = document.createElement('div'); sc.className = 'scaler';
+      sc.appendChild(s); // move the real slide into the scaler
+      var panel = document.createElement('div'); panel.className = 'notepanel';
+      var sn = document.createElement('div'); sn.className = 'sn'; sn.textContent = 'Slide ' + (i+1);
+      var st = document.createElement('div'); st.className = 'st'; st.textContent = label(s);
+      var tag = document.createElement('div'); tag.className = 'sectag';
+      var ti = document.createElement('input'); ti.type = 'text'; ti.placeholder = 'section';
+      ti.value = getVal(nid, 's', SECTIONS[nid] || '');
+      ti.addEventListener('input', function(){ localStorage.setItem(KEY + nid + '_s', ti.value); });
+      tag.appendChild(ti);
+      panel.appendChild(tag); panel.appendChild(sn); panel.appendChild(st);
+      FIELDS.forEach(function(f){
+        var lab = document.createElement('label'); lab.textContent = f[0];
+        if(f[1] === 'f') lab.className = 'fredlbl';
+        panel.appendChild(lab);
+        var def = f[1] === 'p' ? mergedPoint(d) : d[f[1]];
+        panel.appendChild(makeField(nid, f[1], def));
+      });
+      row.appendChild(sc); row.appendChild(panel);
+      deck.appendChild(row);
+    });
+
+    document.getElementById('cwcExp').addEventListener('click', function(){
+      var out = 'CODE WITH CLAUDE, DEBRIEFED — SPEAKER NOTES\n\n';
+      var lastSec = null;
+      slides.forEach(function(s, i){
+        var nid = s.getAttribute('data-nid');
+        var d = DEFAULTS[nid] || {};
+        var sec = getVal(nid,'s',SECTIONS[nid] || '');
+        if(sec !== lastSec){ out += '\n=========  ' + (sec || '(no section)') + '  =========\n\n'; lastSec = sec; }
+        out += (i+1) + '. ' + label(s) + '\n';
+        out += '   POINT: ' + getVal(nid,'p',mergedPoint(d)) + '\n';
+        out += '   LINE:  ' + getVal(nid,'l',d.l) + '\n';
+        var fc = getVal(nid,'f',d.f);
+        if(fc) out += '   FREDDIE: ' + fc + '\n';
+        out += '\n';
+      });
+      var blob = new Blob([out], {type:'text/plain'});
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'cwc-speaker-notes.txt';
+      a.click();
+    });
+
+    document.getElementById('cwcClr').addEventListener('click', function(){
+      if(!confirm('Clear all your typed notes and restore the drafts?')) return;
+      slides.forEach(function(s, i){
+        var nid = s.getAttribute('data-nid');
+        ['p','d','l','s','f'].forEach(function(k){ localStorage.removeItem(KEY + nid + '_' + k); });
+      });
+      location.reload();
+    });
+  })();
+</script>
+</body>
+</html>
