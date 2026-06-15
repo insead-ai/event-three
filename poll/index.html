@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Event 3 poll</title>
+  <meta name="description" content="In one word: the most important skill for being good at AI?">
+  <meta property="og:title" content="Event 3 poll - INSEAD AI Club">
+  <meta property="og:description" content="In one word: the most important skill for being good at AI?">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+
+    :root{
+      --paper:#FAF9F5; --card:#F4F2EC; --ink:#141413; --ink-soft:#8A8780;
+      --ink-mid:#5C5A53; --accent:#D97757; --line:#E2DFD6; --mint:#cfe6e0; --dark:#1d1d1b;
+    }
+
+    html{scroll-behavior:smooth;}
+
+    body{
+      font-family:"Inter",-apple-system,system-ui,sans-serif;
+      background:var(--mint);
+      color:var(--ink);
+      -webkit-font-smoothing:antialiased;
+      min-height:100dvh;
+      display:flex;
+      flex-direction:column;
+      padding-bottom:env(safe-area-inset-bottom,0);
+    }
+
+    .wrap{
+      width:100%;
+      max-width:560px;
+      margin:0 auto;
+      padding:0 clamp(1.25rem,5vw,2rem);
+      flex:1;
+      display:flex;
+      flex-direction:column;
+    }
+
+    /* ---- HEADER ---- */
+    .eyebrow{
+      font-family:"Inter",sans-serif;
+      font-size:12px;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      color:var(--ink-mid);
+      margin-bottom:14px;
+    }
+
+    .header{ padding:2.4rem 0 0.5rem; }
+
+    .header h1{
+      font-family:"Lora",Georgia,serif;
+      font-weight:500;
+      font-size:clamp(1.7rem,6.5vw,2.4rem);
+      line-height:1.12;
+      letter-spacing:-0.01em;
+    }
+
+    .header .sub{
+      font-family:"Inter",sans-serif;
+      color:var(--ink-mid);
+      font-size:1rem;
+      line-height:1.5;
+      margin-top:0.9rem;
+    }
+
+    /* ---- CARD / FORM ---- */
+    .card{
+      background:var(--paper);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:1.6rem 1.4rem;
+      margin-top:1.8rem;
+      box-shadow:0 8px 32px rgba(20,20,19,.10);
+    }
+
+    label{
+      display:block;
+      font-family:"Inter",sans-serif;
+      font-size:0.82rem;
+      font-weight:600;
+      letter-spacing:.02em;
+      color:var(--ink);
+      margin-bottom:0.5rem;
+    }
+
+    .field{ margin-bottom:1.25rem; }
+
+    input[type="text"]{
+      width:100%;
+      padding:0.95rem 1rem;
+      font-family:"Inter",sans-serif;
+      font-size:1.05rem;
+      color:var(--ink);
+      background:var(--card);
+      border:1.5px solid var(--line);
+      border-radius:12px;
+      outline:none;
+      transition:border-color .18s ease, background .18s ease;
+      -webkit-appearance:none;
+    }
+    input[type="text"]::placeholder{ color:var(--ink-soft); }
+    input[type="text"]:focus{ border-color:var(--accent); background:var(--paper); }
+
+    .hint{
+      font-family:"Inter",sans-serif;
+      font-size:0.78rem;
+      color:var(--ink-soft);
+      margin-top:0.4rem;
+    }
+
+    .field-error{
+      font-family:"Inter",sans-serif;
+      font-size:0.78rem;
+      color:var(--accent);
+      margin-top:0.4rem;
+      display:none;
+    }
+    .field-error.visible{ display:block; }
+
+    button{
+      width:100%;
+      padding:1rem 1rem;
+      font-family:"Inter",sans-serif;
+      font-size:1.05rem;
+      font-weight:600;
+      letter-spacing:.01em;
+      color:var(--paper);
+      background:var(--accent);
+      border:none;
+      border-radius:12px;
+      cursor:pointer;
+      transition:opacity .18s ease, transform .05s ease;
+      margin-top:0.4rem;
+    }
+    button:hover{ opacity:.92; }
+    button:active{ transform:translateY(1px); }
+    button:disabled{ opacity:.55; cursor:default; }
+
+    /* ---- THANK YOU ---- */
+    .thankyou{ display:none; text-align:center; padding:2.2rem 1rem; }
+    .thankyou .tick{
+      width:64px;height:64px;border-radius:50%;
+      background:var(--accent);
+      display:flex;align-items:center;justify-content:center;
+      margin:0 auto 1.2rem;
+      box-shadow:0 6px 20px rgba(217,119,87,.35);
+    }
+    .thankyou .tick svg{ width:32px;height:32px; }
+    .thankyou h2{
+      font-family:"Lora",serif;
+      font-weight:500;
+      font-size:1.7rem;
+      line-height:1.15;
+      margin-bottom:0.7rem;
+    }
+    .thankyou p{
+      font-family:"Inter",sans-serif;
+      font-size:1rem;
+      color:var(--ink-mid);
+      line-height:1.55;
+      max-width:380px;
+      margin:0 auto;
+    }
+    .thankyou .echo{
+      display:inline-block;
+      margin-top:1.3rem;
+      font-family:"Lora",serif;
+      font-style:italic;
+      font-size:1.5rem;
+      color:var(--accent);
+    }
+
+    /* ---- FOOTER ---- */
+    footer{
+      text-align:center;
+      padding:1.6rem 0 1.8rem;
+      font-family:"Inter",sans-serif;
+      font-size:0.8rem;
+      letter-spacing:.04em;
+      color:var(--ink-mid);
+    }
+    footer .wordmark{ font-weight:600; color:var(--ink); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="header">
+      <div class="eyebrow">Before we start</div>
+      <h1>In one word: the most important skill for being good at AI?</h1>
+      <p class="sub">Drop your one word below. We'll look at the room's answers - and come back to them at the end.</p>
+    </div>
+
+    <!-- FORM -->
+    <form id="pollForm" class="card" novalidate>
+      <div class="field">
+        <label for="name">Your name</label>
+        <input type="text" id="name" name="name" autocomplete="name" placeholder="e.g. Freddie" maxlength="60">
+        <div class="field-error" id="nameError">Pop your name in.</div>
+      </div>
+
+      <div class="field">
+        <label for="answer">Your one word</label>
+        <input type="text" id="answer" name="answer" autocomplete="off" autocapitalize="off" placeholder="one word" maxlength="40">
+        <div class="hint">Just one word - whatever comes to mind first.</div>
+        <div class="field-error" id="answerError">One word, please.</div>
+      </div>
+
+      <button type="submit" id="submitBtn">Submit</button>
+    </form>
+
+    <!-- THANK YOU -->
+    <div id="thankYou" class="thankyou">
+      <div class="tick">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M5 13l4 4L19 7" stroke="#FAF9F5" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <h2>Got it - thank you.</h2>
+      <p>Your word is in. We'll bring the room's answers up on screen shortly.</p>
+      <span class="echo" id="echoWord"></span>
+    </div>
+
+    <footer><span class="wordmark">INSEAD AI Club</span> &middot; Code with Claude, debriefed</footer>
+  </div>
+
+  <script>
+    // ============================================================
+    // BACKEND ENDPOINT
+    // Paste the Google Apps Script Web App URL between the quotes.
+    // Until then the page still works for rehearsal (shows the
+    // confirmation, just doesn't persist).
+    // ============================================================
+    const ENDPOINT = "__PASTE_APPS_SCRIPT_WEB_APP_URL__";
+
+    const EVENT_ID = "event-three";
+    const SUBMIT_FLAG = "e3_poll_submitted";
+
+    const form = document.getElementById('pollForm');
+    const nameInput = document.getElementById('name');
+    const answerInput = document.getElementById('answer');
+    const nameError = document.getElementById('nameError');
+    const answerError = document.getElementById('answerError');
+    const submitBtn = document.getElementById('submitBtn');
+
+    function showThankYou(word){
+      form.style.display = 'none';
+      document.getElementById('thankYou').style.display = 'block';
+      if (word) document.getElementById('echoWord').textContent = '"' + word + '"';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // If they've already submitted on this device, skip straight to thanks.
+    if (localStorage.getItem(SUBMIT_FLAG) === 'yes') {
+      showThankYou(localStorage.getItem(SUBMIT_FLAG + '_word') || '');
+    }
+
+    function firstWord(s){
+      return s.trim().split(/\s+/)[0] || '';
+    }
+
+    form.addEventListener('submit', async function(e){
+      e.preventDefault();
+
+      const name = nameInput.value.trim();
+      // Keep only the first word of the answer, so "deep curiosity" -> "curiosity"? No:
+      // take the FIRST word, which is the most natural single-word answer.
+      const answer = firstWord(answerInput.value);
+
+      let valid = true;
+      if (!name){ nameError.classList.add('visible'); valid = false; }
+      else { nameError.classList.remove('visible'); }
+      if (!answer){ answerError.classList.add('visible'); valid = false; }
+      else { answerError.classList.remove('visible'); }
+      if (!valid) return;
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Submitting...';
+
+      const payload = {
+        timestamp: new Date().toISOString(),
+        name: name,
+        answer: answer,
+        event: EVENT_ID
+      };
+
+      const endpointSet = ENDPOINT && ENDPOINT.indexOf('PASTE_APPS_SCRIPT') === -1;
+
+      try {
+        if (endpointSet) {
+          await fetch(ENDPOINT, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+        }
+        // no-cors gives an opaque response, so we can't read status -
+        // we treat a completed fetch (or an unset endpoint in rehearsal)
+        // as success and show the confirmation either way.
+        localStorage.setItem(SUBMIT_FLAG, 'yes');
+        localStorage.setItem(SUBMIT_FLAG + '_word', answer);
+        showThankYou(answer);
+      } catch (err) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit';
+        answerError.textContent = 'Something went wrong - try again?';
+        answerError.classList.add('visible');
+      }
+    });
+  </script>
+</body>
+</html>
