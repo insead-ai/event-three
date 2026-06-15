@@ -356,6 +356,7 @@
     };
     const PARAM_VIEW = VIEW_ALIASES[(PARAMS.get('view') || '').toLowerCase()] || null;
     const EMBED = PARAMS.get('embed') === '1' || PARAMS.get('embed') === 'true';
+    const PARAM_TITLE = PARAMS.get('title');
 
     // Theme order = precedence. Loaded from the shared themes.json so the
     // dashboard and poll_takeaway.py never drift. Embedded fallback below.
@@ -652,6 +653,7 @@
       if (EMBED) document.body.classList.add('embed');
       // Open directly on the requested view (default poll1).
       applyView(PARAM_VIEW || 'poll1');
+      if (PARAM_TITLE) document.getElementById('title').textContent = PARAM_TITLE;
 
       try {
         const res = await fetch('../themes.json', { cache: 'no-store' });
