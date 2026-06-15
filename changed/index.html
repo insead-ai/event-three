@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Event 3 poll</title>
-  <meta name="description" content="In one word: the most important skill for being good at AI?">
-  <meta property="og:title" content="Event 3 poll - INSEAD AI Club">
-  <meta property="og:description" content="In one word: the most important skill for being good at AI?">
+  <title>Changed your mind? - Event 3</title>
+  <meta name="description" content="Has tonight changed your mind? Is communication, not coding, the skill that matters?">
+  <meta property="og:title" content="Changed your mind? - INSEAD AI Club">
+  <meta property="og:description" content="Has tonight changed your mind?">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -20,6 +20,7 @@
 
     html{scroll-behavior:smooth;}
 
+    /* Mint dominant - reads as a DIFFERENT moment from the opening poll. */
     body{
       font-family:"Inter",-apple-system,system-ui,sans-serif;
       background:var(--mint);
@@ -41,7 +42,6 @@
       flex-direction:column;
     }
 
-    /* ---- HEADER ---- */
     .eyebrow{
       font-family:"Inter",sans-serif;
       font-size:12px;
@@ -69,14 +69,13 @@
       margin-top:0.9rem;
     }
 
-    /* ---- CARD / FORM ---- */
     .card{
       background:var(--paper);
       border:1px solid var(--line);
       border-radius:18px;
       padding:1.6rem 1.4rem;
       margin-top:1.8rem;
-      box-shadow:0 8px 32px rgba(20,20,19,.10);
+      box-shadow:0 8px 32px rgba(20,20,19,.12);
     }
 
     label{
@@ -89,7 +88,7 @@
       margin-bottom:0.5rem;
     }
 
-    .field{ margin-bottom:1.25rem; }
+    .field{ margin-bottom:1.4rem; }
 
     input[type="text"]{
       width:100%;
@@ -114,33 +113,38 @@
       margin-top:0.4rem;
     }
 
-    .field-error{
-      font-family:"Inter",sans-serif;
-      font-size:0.78rem;
-      color:var(--accent);
-      margin-top:0.4rem;
-      display:none;
-    }
-    .field-error.visible{ display:block; }
+    /* Two big tappable choice buttons */
+    .choices{ display:flex; flex-direction:column; gap:0.9rem; }
 
-    button{
+    .choice{
       width:100%;
-      padding:1rem 1rem;
+      padding:1.35rem 1.2rem;
       font-family:"Inter",sans-serif;
-      font-size:1.05rem;
+      font-size:1.15rem;
       font-weight:600;
       letter-spacing:.01em;
+      border-radius:14px;
+      cursor:pointer;
+      transition:opacity .18s ease, transform .05s ease, box-shadow .18s ease;
+      text-align:center;
+      border:1.5px solid var(--line);
+    }
+    .choice .lead{ display:block; font-size:1.2rem; }
+    .choice .small{ display:block; font-size:0.82rem; font-weight:500; margin-top:.25rem; opacity:.8; }
+
+    .choice.yes{
       color:var(--paper);
       background:var(--accent);
-      border:none;
-      border-radius:12px;
-      cursor:pointer;
-      transition:opacity .18s ease, transform .05s ease;
-      margin-top:0.4rem;
+      border-color:var(--accent);
+      box-shadow:0 6px 20px rgba(217,119,87,.30);
     }
-    button:hover{ opacity:.92; }
-    button:active{ transform:translateY(1px); }
-    button:disabled{ opacity:.55; cursor:default; }
+    .choice.no{
+      color:var(--ink);
+      background:var(--card);
+    }
+    .choice:hover{ opacity:.94; }
+    .choice:active{ transform:translateY(1px); }
+    .choice:disabled{ opacity:.5; cursor:default; transform:none; }
 
     /* ---- THANK YOU ---- */
     .thankyou{ display:none; text-align:center; padding:2.2rem 1rem; }
@@ -172,11 +176,10 @@
       margin-top:1.3rem;
       font-family:"Lora",serif;
       font-style:italic;
-      font-size:1.5rem;
+      font-size:1.4rem;
       color:var(--accent);
     }
 
-    /* ---- FOOTER ---- */
     footer{
       text-align:center;
       padding:1.6rem 0 1.8rem;
@@ -191,27 +194,31 @@
 <body>
   <div class="wrap">
     <div class="header">
-      <div class="eyebrow">Before we start</div>
-      <h1>In one word: the most important skill for being good at AI?</h1>
-      <p class="sub">Drop your one word below. We'll look at the room's answers - and come back to them at the end.</p>
+      <div class="eyebrow">One last thing</div>
+      <h1>Has tonight changed your mind?</h1>
+      <p class="sub">Same question as the start - is communication (not coding) the skill that matters?</p>
     </div>
 
     <!-- FORM -->
-    <form id="pollForm" class="card" novalidate>
+    <form id="changedForm" class="card" novalidate>
       <div class="field">
-        <label for="name">Your name</label>
-        <input type="text" id="name" name="name" autocomplete="name" placeholder="e.g. Freddie" maxlength="60">
-        <div class="field-error" id="nameError">Pop your name in.</div>
+        <label for="name">Your name <span style="font-weight:500;color:var(--ink-soft);">(optional)</span></label>
+        <input type="text" id="name" name="name" autocomplete="name" placeholder="leave blank if you like" maxlength="60">
       </div>
 
-      <div class="field">
-        <label for="answer">Your one word</label>
-        <input type="text" id="answer" name="answer" autocomplete="off" autocapitalize="off" placeholder="one word" maxlength="40">
-        <div class="hint">Just one word - whatever comes to mind first.</div>
-        <div class="field-error" id="answerError">One word, please.</div>
+      <div class="field" style="margin-bottom:0;">
+        <label>Your answer</label>
+        <div class="choices">
+          <button type="button" class="choice yes" data-val="yes">
+            <span class="lead">Yes, it has</span>
+            <span class="small">I see it differently now</span>
+          </button>
+          <button type="button" class="choice no" data-val="no">
+            <span class="lead">No, not really</span>
+            <span class="small">Same view as I came in with</span>
+          </button>
+        </div>
       </div>
-
-      <button type="submit" id="submitBtn">Submit</button>
     </form>
 
     <!-- THANK YOU -->
@@ -222,7 +229,7 @@
         </svg>
       </div>
       <h2>Got it - thank you.</h2>
-      <p>Your word is in. We'll bring the room's answers up on screen shortly.</p>
+      <p>Your answer is in. We'll bring the room's split up on screen.</p>
       <span class="echo" id="echoWord"></span>
     </div>
 
@@ -233,63 +240,43 @@
   <script src="../config.js"></script>
   <script>
     // ============================================================
-    // BACKEND ENDPOINT
-    // Read once from the shared config (../config.js). Paste the
-    // Apps Script Web App URL there - it serves every page.
-    // Until then the page still works for rehearsal (shows the
-    // confirmation, just doesn't persist).
+    // BACKEND ENDPOINT - read once from the shared config.
     // ============================================================
     const ENDPOINT = (window.AI_CLUB_ENDPOINT || "__PASTE_APPS_SCRIPT_WEB_APP_URL__");
 
     const EVENT_ID = "event-three";
-    const SUBMIT_FLAG = "e3_poll_submitted";
+    const SUBMIT_FLAG = "e3_changed_submitted";
 
-    const form = document.getElementById('pollForm');
+    const form = document.getElementById('changedForm');
     const nameInput = document.getElementById('name');
-    const answerInput = document.getElementById('answer');
-    const nameError = document.getElementById('nameError');
-    const answerError = document.getElementById('answerError');
-    const submitBtn = document.getElementById('submitBtn');
+    const choices = document.querySelectorAll('.choice');
 
-    function showThankYou(word){
+    function labelFor(val){ return val === 'yes' ? 'Yes, it has' : 'No, not really'; }
+
+    function showThankYou(val){
       form.style.display = 'none';
       document.getElementById('thankYou').style.display = 'block';
-      if (word) document.getElementById('echoWord').textContent = '"' + word + '"';
+      if (val) document.getElementById('echoWord').textContent = '"' + labelFor(val) + '"';
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // If they've already submitted on this device, skip straight to thanks.
+    // Already answered on this device? Skip straight to thanks.
     if (localStorage.getItem(SUBMIT_FLAG) === 'yes') {
-      showThankYou(localStorage.getItem(SUBMIT_FLAG + '_word') || '');
+      showThankYou(localStorage.getItem(SUBMIT_FLAG + '_val') || '');
     }
 
-    function firstWord(s){
-      return s.trim().split(/\s+/)[0] || '';
-    }
+    let submitting = false;
 
-    form.addEventListener('submit', async function(e){
-      e.preventDefault();
-
-      const name = nameInput.value.trim();
-      // Keep only the first word of the answer, so "deep curiosity" -> "curiosity"? No:
-      // take the FIRST word, which is the most natural single-word answer.
-      const answer = firstWord(answerInput.value);
-
-      let valid = true;
-      if (!name){ nameError.classList.add('visible'); valid = false; }
-      else { nameError.classList.remove('visible'); }
-      if (!answer){ answerError.classList.add('visible'); valid = false; }
-      else { answerError.classList.remove('visible'); }
-      if (!valid) return;
-
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'Submitting...';
+    async function submitChoice(val){
+      if (submitting) return;
+      submitting = true;
+      choices.forEach(c => c.disabled = true);
 
       const payload = {
-        type: 'word',
+        type: 'changed',
         timestamp: new Date().toISOString(),
-        name: name,
-        answer: answer,
+        name: nameInput.value.trim(),
+        changed: val,
         event: EVENT_ID
       };
 
@@ -304,18 +291,19 @@
             body: JSON.stringify(payload)
           });
         }
-        // no-cors gives an opaque response, so we can't read status -
-        // we treat a completed fetch (or an unset endpoint in rehearsal)
-        // as success and show the confirmation either way.
+        // no-cors gives an opaque response, so a completed fetch (or an unset
+        // endpoint in rehearsal) is treated as success.
         localStorage.setItem(SUBMIT_FLAG, 'yes');
-        localStorage.setItem(SUBMIT_FLAG + '_word', answer);
-        showThankYou(answer);
+        localStorage.setItem(SUBMIT_FLAG + '_val', val);
+        showThankYou(val);
       } catch (err) {
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Submit';
-        answerError.textContent = 'Something went wrong - try again?';
-        answerError.classList.add('visible');
+        submitting = false;
+        choices.forEach(c => c.disabled = false);
       }
+    }
+
+    choices.forEach(btn => {
+      btn.addEventListener('click', () => submitChoice(btn.dataset.val));
     });
   </script>
 </body>

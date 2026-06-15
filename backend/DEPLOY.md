@@ -2,10 +2,22 @@
 
 This is the only thing that has to be done by hand. Do it once, before the talk.
 
-The poll page is static (GitHub Pages), so it needs a tiny external endpoint to
-save answers. We use a Google Apps Script Web App that appends each answer to a
-Google Sheet (the exact pattern Event 1 used) - plus a `doGet` that hands the
-answers back as JSON so the takeaway image can be generated with one command.
+The pages are static (GitHub Pages), so they need a tiny external endpoint to
+save and read answers. We use a Google Apps Script Web App that appends each
+answer to a Google Sheet (the exact pattern Event 1 used) - plus a `doGet` that
+hands answers back as JSON (and JSONP) so the live results page and the takeaway
+image can read them.
+
+**ONE deploy serves everything.** The single script powers BOTH polls and BOTH
+live pages. On first write it auto-creates two tabs in the one spreadsheet:
+
+| Tab | Columns | What it holds |
+|---|---|---|
+| `Poll1` | Timestamp, Name, Answer, Event | the one-word poll |
+| `Poll2` | Timestamp, Name, Changed, Event | the yes/no "changed your mind" poll |
+
+You do **not** create the tabs by hand - the script makes them (with a bold,
+frozen header row) the first time each poll gets a response.
 
 ## Steps
 
@@ -30,39 +42,58 @@ answers back as JSON so the takeaway image can be generated with one command.
    then **Allow**. (It says "unsafe" because it's your own unverified script -
    that's normal.)
 
-7. Copy the **Web app URL** it gives you. It looks like:
-   `https://script.google.com/macros/s/AKfyc.....iks/exec`
+7. Copy the **Web app URL** it gives you. It looks like (THIS IS JUST AN EXAMPLE
+   URL - use the one Google actually gives you):
 
-8. Sanity check: paste that URL into a browser. You should see
-   `{"status":"ok","service":"event-three poll","count":0,"responses":[]}`.
-
-## Wire it into the live poll page
-
-9. In the deployed poll repo, open `poll/index.html`, find this line near the
-   bottom:
-
-   ```js
-   const ENDPOINT = "__PASTE_APPS_SCRIPT_WEB_APP_URL__";
+   ```
+   https://script.google.com/macros/s/AKfycbEXAMPLEonlyEXAMPLEonly12345/exec
    ```
 
-   Replace the placeholder with the URL from step 7, commit and push:
+8. Sanity check: paste that URL into a browser. You should see
+   `{"status":"ok","service":"event-three poll","type":"poll1","count":0,"responses":[]}`.
+   (Add `?type=poll2` to the URL to check the other poll the same way.)
+
+## Wire it into EVERY page - paste the URL ONCE
+
+There is now a single shared config file, `config.js`, at the repo root. Every
+page (poll, results, changed) reads the endpoint from it - so you paste the URL
+**once**, not three times.
+
+9. Open `config.js` (repo root) and replace the placeholder:
+
+   ```js
+   window.AI_CLUB_ENDPOINT = "__PASTE_APPS_SCRIPT_WEB_APP_URL__";
+   ```
+
+   with the URL from step 7:
+
+   ```js
+   window.AI_CLUB_ENDPOINT = "https://script.google.com/macros/s/AKfyc...../exec";
+   ```
+
+   Then commit and push:
 
    ```bash
    cd /path/to/event-three
-   git add poll/index.html
-   git commit -m "Wire poll endpoint"
+   git add config.js
+   git commit -m "Wire AI Club endpoint into config.js"
    git push
    ```
 
-   GitHub Pages redeploys in ~30-60s.
+   GitHub Pages redeploys in ~30-60s. That's the poll, the live results board,
+   and the yes/no page all wired in one go.
 
-## Wire it into the takeaway generator
+## The takeaway image (end of talk)
 
-10. Either edit the default in `~/.claude/scripts/event-three-poll/poll_takeaway.py`
-    (the `DEFAULT_ENDPOINT` constant near the top), or just pass it at run time:
+The takeaway generator can take the URL at run time (no editing needed):
 
-    ```bash
-    python3 ~/.claude/scripts/event-three-poll/poll_takeaway.py --endpoint "PASTE_THE_/exec_URL_HERE"
-    ```
+```bash
+python3 "~/Desktop/Code with Claude Debriefed/poll_takeaway.py" --endpoint "<your /exec URL>"
+```
+
+- default = themed leaderboard PNG from Poll1
+- `--ai` = let Claude tidy the "Other" bucket (needs `ANTHROPIC_API_KEY`; falls
+  back to printing a paste-ready prompt if there's no key)
+- `--changed` = the yes/no result card from Poll2
 
 That's it. No secrets live in this repo - the data lives only in your Google Sheet.
