@@ -883,17 +883,33 @@
   (function(){
     var p = new URLSearchParams(location.search);
 
-    // ---- single-slide presenter mode (?slide=N) ----
-    if(p.has('slide')){
-      var n = parseInt(p.get('slide'),10);
-      var slides = document.querySelectorAll('.slide');
+    // ---- presenter mode (?slide=N or ?present): click/arrow through ----
+    if(p.has('slide') || p.has('present')){
+      var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
       var deck = document.querySelector('.deck');
       document.documentElement.style.margin='0'; document.body.style.margin='0';
+      document.body.style.background='#000'; document.body.style.height='100vh'; document.body.style.overflow='hidden';
       deck.style.padding='0'; deck.style.gap='0'; deck.style.display='block';
-      slides.forEach(function(s,i){
-        if(i === n-1){ s.style.boxShadow='none'; s.style.display='block'; s.style.margin='0'; }
-        else { s.style.display='none'; }
+      var cur = (parseInt(p.get('slide'),10) || 1) - 1;
+      if(cur < 0) cur = 0; if(cur > slides.length-1) cur = slides.length-1;
+      function fit(){
+        var sc = Math.min(window.innerWidth/1280, window.innerHeight/720);
+        slides.forEach(function(el){
+          el.style.position='absolute'; el.style.top='50%'; el.style.left='50%';
+          el.style.transformOrigin='center center';
+          el.style.transform='translate(-50%,-50%) scale('+sc+')';
+          el.style.boxShadow='none'; el.style.margin='0';
+        });
+      }
+      function show(i){ cur=(i+slides.length)%slides.length; slides.forEach(function(el,idx){ el.style.display = idx===cur ? 'block':'none'; }); }
+      function next(){ show(cur+1); } function prev(){ show(cur-1); }
+      fit(); show(cur);
+      window.addEventListener('resize', fit);
+      document.addEventListener('keydown', function(e){
+        if(e.key==='ArrowRight'||e.key==='PageDown'||e.key===' '){ e.preventDefault(); next(); }
+        else if(e.key==='ArrowLeft'||e.key==='PageUp'){ e.preventDefault(); prev(); }
       });
+      document.addEventListener('click', function(e){ (e.clientX > window.innerWidth/2) ? next() : prev(); });
       return;
     }
 
