@@ -10,4 +10,4 @@
 // Until it is pasted, the pages still load and show friendly placeholder /
 // rehearsal states (they just do not persist or read live data).
 // =====================================================================
-window.AI_CLUB_ENDPOINT = "__PASTE_APPS_SCRIPT_WEB_APP_URL__";
+window.AI_CLUB_ENDPOINT = "https://script.google.com/macros/s/AKfycbwgWFTQyWJ9AaFlzasH6Qpv9bl_rhpD3dwWr8nm5DgPzbvreLdfOQ5uquJtbn-lJcYqiQ/exec";
