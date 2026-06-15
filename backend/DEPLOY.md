@@ -13,11 +13,18 @@ live pages. On first write it auto-creates two tabs in the one spreadsheet:
 
 | Tab | Columns | What it holds |
 |---|---|---|
-| `Poll1` | Timestamp, Name, Answer, Event | the one-word poll |
-| `Poll2` | Timestamp, Name, Changed, Event | the yes/no "changed your mind" poll |
+| `Poll1` | Timestamp, Name, Token, Answer, Event | the one-word poll |
+| `Poll2` | Timestamp, Name, Token, Changed, Answer, Event | the yes/no + their one word now |
 
 You do **not** create the tabs by hand - the script makes them (with a bold,
 frozen header row) the first time each poll gets a response.
+
+**`Token` is a silent per-device id** (a random value stored on each phone, no
+email, no login). Because `/poll` and `/changed` are the same site, a phone uses
+the **same** Token on both - so the same person's start answer (Poll1) and end
+answer (Poll2) share a Token and can be joined later. The live "before vs after"
+view doesn't even need the join (it compares totals), but the Token is there if
+you want per-person movement afterwards.
 
 ## Steps
 
@@ -95,5 +102,22 @@ python3 "~/Desktop/Code with Claude Debriefed/poll_takeaway.py" --endpoint "<you
 - `--ai` = let Claude tidy the "Other" bucket (needs `ANTHROPIC_API_KEY`; falls
   back to printing a paste-ready prompt if there's no key)
 - `--changed` = the yes/no result card from Poll2
+
+## 60-second smoke test (do this once the endpoint is pasted + pushed)
+
+This proves the silent device-token matching end to end on a real phone:
+
+1. On **phone A**, open `.../event-three/poll`, enter a name + one word, submit.
+2. On the **same phone A**, open `.../event-three/changed`, pick Yes/No and type a
+   word, submit.
+3. Open the Google Sheet:
+   - `Poll1` has one new row, `Poll2` has one new row.
+   - **The `Token` value is identical in both rows.** That is the same-device
+     match working (no email needed).
+4. Open `.../event-three/results/?view=beforeafter` - you should see your two
+   answers reflected in the start/now counts and the Yes/No headline.
+
+If the two Token values match, you're done. (Different tokens would mean the two
+pages aren't same-origin - they are, so they will match.)
 
 That's it. No secrets live in this repo - the data lives only in your Google Sheet.
